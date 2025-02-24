@@ -2,6 +2,7 @@ const path = require("path");
 const express = require('express');
 const {products, categories, users} = require("./src/api/e-commerce");
 
+
 const ENVDIR = path.join(__dirname, '.env');
 process.loadEnvFile(ENVDIR);
 
@@ -15,6 +16,19 @@ app.get('/', (req, res) => {
 
 app.get('/nuevo-endpoint', (req, res) => {
   res.send('Hola soy el nuevo endpoint');
+})
+
+app.get('/send-limit-offset', (req, res) => {
+  const {limit, offset} = req.query;
+
+  if (!limit || !offset) {
+    return res.status(400).send('Los parámetros limit y offset son obligatorios.');
+  }
+
+  res.json({
+    limit,
+    offset
+  })
 })
 
 app.get('/products', (req, res) => {
@@ -110,19 +124,6 @@ app.get('/users', (req, res) => {
       ...users
     ]
   );
-})
-
-app.get('/send-limit-offset', (req, res) => {
-  const {limit, offset} = req.query;
-
-  if (!limit || !offset) {
-    return res.status(400).send('Los parámetros limit y offset son obligatorios.');
-  }
-
-  res.json({
-    limit,
-    offset
-  })
 })
 
 app.listen(port, () => {

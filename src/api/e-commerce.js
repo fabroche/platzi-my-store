@@ -1,43 +1,40 @@
-export const products = [
-  {
-    id: '1',
-    name: 'Producto1',
-    price: 4.99,
-    currency: 'EUR',
-    categories: ['1']
-  },
-  {
-    id: '2',
-    name: 'Producto2',
-    price: 12.99,
-    currency: 'EUR',
-    categories: ['2']
-  },
-  {
-    id: '3',
-    name: 'Producto3',
-    price: 58.79,
-    currency: 'EUR',
-    categories: ['1', '3']
-  }
-]
+const {faker} = require('@faker-js/faker');
 
-export const categories = [
-  {
-    id: '1',
-    name: 'Comida',
-  },
-  {
-    id: '2',
-    name: 'Ropa',
-  },
-  {
-    id: '3',
-    name: 'Electrodomesticos',
-  }
-]
+function removeDuplicates(list) {
+  return [...new Set(list)];
+}
 
-export const users = [
+function createArrayFromObject(length, mapFunc, allowDuplicates = false) {
+  const newList = Array.from({length: length}, mapFunc)
+
+  if (allowDuplicates) {
+    return newList;
+  }
+
+  return removeDuplicates(newList);
+
+}
+
+const categories = createArrayFromObject(5, () => ({
+  id: faker.database.mongodbObjectId(),
+  name: faker.commerce.productAdjective(),
+}))
+
+const products = createArrayFromObject(20, () => ({
+  id: faker.database.mongodbObjectId(),
+  name: faker.commerce.productName(),
+  price: faker.commerce.price(),
+  currency: 'EUR',
+  categories: createArrayFromObject(
+    Math.floor(Math.random() * categories.length) + 1
+    , () => (
+      categories[Math.floor(Math.random() * categories.length)].id
+    )),
+  description: faker.commerce.productDescription(),
+  image: faker.image.url({width:800, height:600}),
+}))
+
+const users = [
   {
     id: '1',
     username: 'fabroche',
@@ -55,7 +52,7 @@ export const users = [
   }
 ]
 
-export const roles = [
+const roles = [
   {
     id: '1',
     name: 'admin',
@@ -69,11 +66,11 @@ export const roles = [
   {
     id: '3',
     name: 'moderator',
-    permissions: ['1','2','3','4'],
+    permissions: ['1', '2', '3', '4'],
   }
 ]
 
-export const permissions = [
+const permissions = [
   {
     id: '1',
     name: 'read',
@@ -95,3 +92,11 @@ export const permissions = [
     name: 'all',
   }
 ]
+
+module.exports = {
+  products,
+  categories,
+  users,
+  roles,
+  permissions,
+}
