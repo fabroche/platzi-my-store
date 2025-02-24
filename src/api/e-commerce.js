@@ -1,19 +1,9 @@
 const {ENV} = require('../../config');
 const {faker} = require('@faker-js/faker');
+const {createArrayFromObject} = require('../utils/utils.js')
 
-function removeDuplicates(list) {
-  return [...new Set(list)];
-}
-
-function createArrayFromObject(length, mapFunc, allowDuplicates = false) {
-  const newList = Array.from({length: length}, mapFunc)
-
-  if (allowDuplicates) {
-    return newList;
-  }
-
-  return removeDuplicates(newList);
-
+function getCategoryNames(categoriesIdList) {
+  return categories.filter(category => categoriesIdList.includes(category.id));
 }
 
 const categories = createArrayFromObject(5, () => ({
@@ -100,4 +90,5 @@ module.exports = {
   users,
   roles,
   permissions,
+  getCategoryNames,
 }

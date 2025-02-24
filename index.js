@@ -1,9 +1,10 @@
 const {ENV} = require('./config.js');
-const express = require('express');
 const {products, categories, users} = require("./src/api/e-commerce");
+const {handlePagination} = require("./src/utils/utils.js");
+const {getCategoryNames} = require("./src/api/e-commerce.js");
 
+const express = require('express');
 const app = express();
-
 const port = ENV.PORT;
 
 app.get('/', (req, res) => {
@@ -155,33 +156,5 @@ app.get('/users', (req, res) => {
 })
 
 app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
+  console.log(`Listening on port :${port}`);
 })
-
-function getCategoryNames(categoriesIdList) {
-  return categories.filter(category => categoriesIdList.includes(category.id));
-}
-
-function handlePagination({limit, offset = 0, itemList}) {
-
-  const parseLimit = parseInt(limit)
-
-  if (!parseLimit && !offset) {
-      return [
-        ...itemList
-      ]
-  }
-
-  let result = [];
-  let count = 0;
-  for (let i = parseInt(offset); i < itemList.length; i++) {
-
-    if (count >= parseLimit) {
-      break;
-    }
-    result.push(itemList[i]);
-    count++;
-  }
-
-  return result;
-}
