@@ -1,3 +1,4 @@
+const {ENV} = require('../../config');
 const {faker} = require('@faker-js/faker');
 
 function removeDuplicates(list) {
@@ -24,14 +25,14 @@ const products = createArrayFromObject(20, () => ({
   id: faker.database.mongodbObjectId(),
   name: faker.commerce.productName(),
   price: faker.commerce.price(),
-  currency: 'EUR',
+  currency: ENV.CURRENCY,
   categories: createArrayFromObject(
     Math.floor(Math.random() * categories.length) + 1
     , () => (
       categories[Math.floor(Math.random() * categories.length)].id
     )),
   description: faker.commerce.productDescription(),
-  image: faker.image.url({width:800, height:600}),
+  image: faker.image.url({width: ENV.PRODUCT_IMAGE_W, height: ENV.PRODUCT_IMAGE_H}),
 }))
 
 const users = [

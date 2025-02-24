@@ -1,14 +1,10 @@
-const path = require("path");
+const {ENV} = require('./config.js');
 const express = require('express');
 const {products, categories, users} = require("./src/api/e-commerce");
 
-
-const ENVDIR = path.join(__dirname, '.env');
-process.loadEnvFile(ENVDIR);
-
 const app = express();
 
-const port = process.env.PORT;
+const port = ENV.PORT;
 
 app.get('/', (req, res) => {
   res.send('Hola mundo, este es mi primer server en express');
@@ -32,11 +28,22 @@ app.get('/send-limit-offset', (req, res) => {
 })
 
 app.get('/products', (req, res) => {
-  res.json(
-    [
-      ...products
-    ]
-  );
+  const {limit = products.length, offset = 0} = req.query;
+
+  const result = handlePagination({
+    limit,
+    offset,
+    itemList: products
+  });
+
+  if (!result?.length) {
+    res.status(404).send('No se encontraron productos');
+  }
+
+  res.status(200).json([
+    ...result
+  ]);
+
 })
 
 app.get('/products/:id', (req, res) => {
@@ -54,11 +61,21 @@ app.get('/products/:id', (req, res) => {
 })
 
 app.get('/categories', (req, res) => {
-  res.json(
-    [
-      ...categories
-    ]
-  );
+  const {limit = categories.length, offset = 0} = req.query;
+
+  const result = handlePagination({
+    limit,
+    offset,
+    itemList: categories
+  });
+
+  if (!result?.length) {
+    res.status(404).send('No se encontraron Categorias');
+  }
+
+  res.status(200).json([
+    ...result
+  ]);
 })
 
 app.get('/categories/:id', (req, res) => {
@@ -82,7 +99,7 @@ app.get('/categories/:categoryId/products/:productId', (req, res) => {
   } = req.params;
 
   const result = products.find(product => product.categories.includes(categoryId) && product.id === productId);
-  const {name:categoryName} = categories.find(category => category.id === categoryId);
+  const {name: categoryName} = categories.find(category => category.id === categoryId);
 
   if (!result) {
     res.status(404).send(`No existe ningun producto con id = ${productId} y la categoria = ${categoryName}`);
@@ -107,7 +124,7 @@ app.get('/categories/:categoryId/products', (req, res) => {
         ...product,
         categories: getCategoryNames(product.categories)
       };
-  });
+    });
 
   if (!result?.length) {
     res.status(404).send(`No existe ningun producto con la categoria = ${categoryId}`);
@@ -119,11 +136,22 @@ app.get('/categories/:categoryId/products', (req, res) => {
 })
 
 app.get('/users', (req, res) => {
-  res.json(
-    [
-      ...users
-    ]
-  );
+
+  const {limit = users.length, offset = 0} = req.query;
+
+  const result = handlePagination({
+    limit,
+    offset,
+    itemList: users
+  });
+
+  if (!result?.length) {
+    res.status(404).send('No se encontraron usuarios');
+  }
+
+  res.status(200).json([
+    ...result
+  ]);
 })
 
 app.listen(port, () => {
@@ -132,4 +160,28 @@ app.listen(port, () => {
 
 function getCategoryNames(categoriesIdList) {
   return categories.filter(category => categoriesIdList.includes(category.id));
+}
+
+function handlePagination({limit, offset = 0, itemList}) {
+
+  const parseLimit = parseInt(limit)
+
+  if (!parseLimit && !offset) {
+      return [
+        ...itemList
+      ]
+  }
+
+  let result = [];
+  let count = 0;
+  for (let i = parseInt(offset); i < itemList.length; i++) {
+
+    if (count >= parseLimit) {
+      break;
+    }
+    result.push(itemList[i]);
+    count++;
+  }
+
+  return result;
 }
