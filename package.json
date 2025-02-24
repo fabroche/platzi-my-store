@@ -1,0 +1,29 @@
+{
+  "name": "platzi-my-store",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js",
+    "lint": "eslint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fabroche/platzi-my-store.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fabroche/platzi-my-store/issues"
+  },
+  "homepage": "https://github.com/fabroche/platzi-my-store#readme",
+  "description": "",
+  "devDependencies": {
+    "eslint": "^9.21.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-prettier": "^5.2.3",
+    "nodemon": "^3.1.9",
+    "prettier": "^3.5.2"
+  }
+}
