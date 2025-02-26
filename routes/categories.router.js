@@ -52,10 +52,8 @@ categoriesRouter.get('/:categoryId/products/:productId', (req, res) => {
   }
 
   let result = products.find(product => product.categories.includes(categoryId) && product.id === productId);
-  // const category = categories.find(category => category.id === categoryId);
 
   if (!result) {
-    // res.status(404).send(`No existe ningun producto con id = ${productId} y la categoria = ${category.name}`);
     res.status(404).send(`No se encontraron resultados`);
   }
 
