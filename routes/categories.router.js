@@ -1,4 +1,5 @@
 const {categories, products, getCategoryNames} = require("../src/api/e-commerce");
+const {CategoryModel} = require("../src/models/category.models.js");
 const {handlePagination} = require("../src/utils/utils");
 const {Router} = require("express");
 
@@ -105,6 +106,20 @@ categoriesRouter.get('/:categoryId/products', (req, res) => {
   res.json([
     ...result
   ])
+})
+
+categoriesRouter.post('/', (req, res) => {
+  const body = req.body;
+
+  if(new CategoryModel(body).isValid()){
+    categories.push(body);
+    res.status(201).json({
+      message: `Category ${body.name} created`,
+      data: body
+    });
+  }
+
+  res.status(400).send('Bad request: This is not a valid Category');
 })
 
 module.exports = {
