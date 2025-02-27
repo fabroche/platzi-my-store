@@ -1,5 +1,6 @@
 const {Router} = require('express');
 const {products} = require("../src/api/e-commerce");
+const {ProductModel} = require("../src/models/product.models.js");
 const {handlePagination} = require("../src/utils/utils");
 
 const productsRouter = Router();
@@ -7,7 +8,7 @@ const productsRouter = Router();
 productsRouter.get('/', (req, res) => {
   const {limit = products.length, offset = 0} = req.query;
 
-  if(limit <= 0 || offset < 0) {
+  if (limit <= 0 || offset < 0) {
     res.status(404).send('Limit tiene que ser mayor que 0 y Offset no puede se menor que 0');
   }
 
@@ -38,6 +39,21 @@ productsRouter.get('/:id', (req, res) => {
   res.json({
     ...result
   });
+
+})
+
+productsRouter.post('/', (req, res) => {
+  const body = req.body;
+
+  if (new ProductModel(body).isValid()) {
+    products.push(body)
+    res.status(201).json({
+      message: `Producto ${body.name} created`,
+      data: body
+    });
+  }
+
+  res.status(400).send('Bad request: This is not a valid product');
 
 })
 

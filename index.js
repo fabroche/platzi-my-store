@@ -4,6 +4,7 @@ const express = require('express');
 const {routerApi} = require('./routes/index.js');
 const app = express();
 const port = ENV.PORT;
+app.use(express.json());
 
 app.get('/', (req, res) => {
   res.send('Hola mundo, este es mi primer server en express');
