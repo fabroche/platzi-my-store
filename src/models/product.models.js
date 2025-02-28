@@ -10,88 +10,55 @@ class ProductModel {
                 description,
                 image
               }) {
-    this._id = id;
-    this._name = name;
-    this._price = price;
-    this._currency = currency;
-    this._categories = categories;
-    this._description = description;
-    this._image = image;
+    this.id = id;
+    this.name = name;
+    this.price = price;
+    this.currency = currency;
+    this.categories = categories;
+    this.description = description;
+    this.image = image;
   }
 
-  // Getters
-  get id() {
-    return this._id;
+  // Validadores individuales
+  isValidId() {
+    return typeof this.id === 'string';
   }
 
-  get name() {
-    return this._name;
+  isValidName() {
+    return typeof this.name === 'string';
   }
 
-  get price() {
-    return this._price;
+  isValidPrice() {
+    return typeof this.price === 'number';
   }
 
-  get currency() {
-    return this._currency;
+  isValidCurrency() {
+    return typeof this.currency === 'string';
   }
 
-  get categories() {
-    return this._categories;
+  isValidCategories() {
+    return Array.isArray(this.categories) &&
+      this.categories.length > 0 &&
+      this.categories.every(cat => typeof cat === 'string');
   }
 
-  get description() {
-    return this._description;
+  isValidDescription() {
+    return typeof this.description === 'string';
   }
 
-  get image() {
-    return this._image;
+  isValidImage() {
+    return typeof this.image === 'string';
   }
 
-  // Setters
-  set id(value) {
-    this._id = value;
-  }
-
-  set name(value) {
-    this._name = value;
-  }
-
-  set price(value) {
-    this._price = value;
-  }
-
-  set currency(value) {
-    this._currency = value;
-  }
-
-  set categories(value) {
-    this._categories = value;
-  }
-
-  set description(value) {
-    this._description = value;
-  }
-
-  set image(value) {
-    this._image = value;
-  }
-
+  // Validador general que utiliza los validadores individuales
   isValid() {
-
-    const isValidProduct = (
-      typeof this._id === 'string' &&
-      typeof this._name === 'string' &&
-      typeof this._price === 'number' &&
-      typeof this._currency === 'string' &&
-      Array.isArray(this._categories) &&
-      this._categories?.length > 0 &&
-      this._categories.every(cat => typeof cat === 'string') &&
-      typeof this._description === 'string' &&
-      typeof this._image === 'string'
-    )
-
-    return isValidProduct;
+    return this.isValidId() &&
+      this.isValidName() &&
+      this.isValidPrice() &&
+      this.isValidCurrency() &&
+      this.isValidCategories() &&
+      this.isValidDescription() &&
+      this.isValidImage();
   }
 }
 
