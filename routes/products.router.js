@@ -57,6 +57,70 @@ productsRouter.post('/', (req, res) => {
 
 })
 
+productsRouter.put('/:id', (req, res) => {
+  const {id} = req.params;
+  const body = req.body;
+
+  const productIndex = products.findIndex(product => product.id === id);
+
+  if (new ProductModel(body).isValid() && productIndex !== -1) {
+    products[productIndex] = {...body};
+
+    res.status(201).json({
+      message: `Producto ${body.id} updated`,
+      data: body
+    });
+  }
+
+  res.status(400).send('Bad request: This is not a valid product');
+
+})
+
+productsRouter.patch('/:id', (req, res) => {
+  const {id} = req.params;
+  const body = req.body;
+
+  const productIndex = products.findIndex(product => product.id === id);
+
+  if (productIndex !== -1) {
+    const newPatchProduct = new ProductModel({
+      ...products[productIndex],
+      ...body
+    })
+
+    if (newPatchProduct.isValid()) {
+      products[productIndex] = {
+        ...newPatchProduct
+      };
+    }
+
+    res.status(201).json({
+      message: `Producto ${body.id} Partial updated`,
+      data: body,
+      id
+    });
+  }
+
+  res.status(400).send('Bad request: This is not a valid product');
+
+})
+
+productsRouter.delete('/:id', (req, res) => {
+  const {id} = req.params;
+  const productIndex = products.findIndex(product => product.id === id);
+
+  if (productIndex !== -1) {
+    const deletedProduct = products.splice(productIndex, 1);
+    res.status(200).json({
+      message: `Producto ${id} deleted`,
+      data: deletedProduct,
+      id
+    })
+  }
+
+  res.status(400).send(`Bad request: there is no product with id= ${id}`);
+})
+
 module.exports = {
   productsRouter
 };
