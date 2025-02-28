@@ -1,30 +1,20 @@
 class CategoryModel {
   constructor({id, name}) {
-    this._id = id;
-    this._name = name;
+    this.id = id;
+    this.name = name;
   }
 
-  get id() {
-    return this._id;
+  // Validadores individuales
+  isValidId() {
+    return typeof this.id === 'string';
   }
 
-  get name() {
-    return this._name;
-  }
-
-  set id(value) {
-    this._id = value;
-  }
-
-  set name(value) {
-    this._name = value;
+  isValidName() {
+    return typeof this.name === 'string';
   }
 
   isValid() {
-    return (
-      typeof this._id === 'string' &&
-      typeof this._name === 'string'
-    );
+    return this.isValidId() && this.isValidName();
   }
 }
 
