@@ -1,11 +1,16 @@
-const {categories, products, getCategoryNames} = require("../src/api/e-commerce");
-const {CategoryModel} = require("../src/models/category.models.js");
 const {handlePagination} = require("../src/utils/utils");
 const {Router} = require("express");
+const {CategoriesService} = require("../services/categories.services");
+const {ProductsService} = require("../services/products.services");
 
 const categoriesRouter = Router();
 
+const categoriesService = new CategoriesService();
+const productsService = new ProductsService();
+
 categoriesRouter.get('/', (req, res) => {
+  const categories = categoriesService.getCategories()
+
   const {limit = categories.length, offset = 0} = req.query;
 
   const result = handlePagination({
@@ -24,8 +29,9 @@ categoriesRouter.get('/', (req, res) => {
 })
 
 categoriesRouter.get('/:id', (req, res) => {
+
   const {id} = req.params;
-  const result = categories.find(category => category.id === id)
+  const result = categoriesService.findById({id})
 
   if (!result) {
     res.status(404).send(`No existe ninguna categoria con id = ${id}`);
@@ -43,16 +49,22 @@ categoriesRouter.get('/:categoryId/products/:productId', (req, res) => {
     productId
   } = req.params;
 
+  const products = productsService.getProducts();
+
   const {
     limit = products.length,
     offset = 0
   } = req.query;
 
-  if(limit <= 0 || offset < 0) {
+  if (limit <= 0 || offset < 0) {
     res.status(400).send('Bad Request: Limit tiene que ser mayor que 0 y Offset no puede se menor que 0');
   }
 
-  let result = products.find(product => product.categories.includes(categoryId) && product.id === productId);
+  let result = categoriesService.getCategoryInProduct({
+    categoryId,
+    productId,
+    products
+  });
 
   if (!result) {
     res.status(404).send(`No se encontraron resultados`);
@@ -66,7 +78,7 @@ categoriesRouter.get('/:categoryId/products/:productId', (req, res) => {
 
   res.json({
     ...result,
-    categories: getCategoryNames([categoryId])
+    categories: categoriesService.getCategoryNamesByIdList({categoriesIdList: [categoryId]})
   })
 })
 
@@ -75,23 +87,21 @@ categoriesRouter.get('/:categoryId/products', (req, res) => {
     categoryId,
   } = req.params;
 
+  const products = productsService.getProducts();
+
   const {
     limit = products.length,
     offset = 0
   } = req.query;
 
-  if(limit <= 0 || offset < 0) {
+  if (limit <= 0 || offset < 0) {
     res.status(400).send('Bad Request: Limit tiene que ser mayor que 0 y Offset no puede se menor que 0');
   }
 
-  let result = products
-    .filter(product => product.categories.includes(categoryId))
-    .map(product => {
-      return {
-        ...product,
-        categories: getCategoryNames(product.categories)
-      };
-    });
+  let result = categoriesService.getCategoryInProductsById({
+    categoryId,
+    products
+  })
 
   if (!result?.length) {
     res.status(404).send(`No existe ningun producto con la categoria = ${categoryId}`);
@@ -111,11 +121,15 @@ categoriesRouter.get('/:categoryId/products', (req, res) => {
 categoriesRouter.post('/', (req, res) => {
   const body = req.body;
 
-  if(new CategoryModel(body).isValid()){
-    categories.push(body);
+  const newCategory = categoriesService.createCategory({
+    category: body
+  })
+
+  if (newCategory) {
     res.status(201).json({
-      message: `Category ${body.name} created`,
-      data: body
+      message: `Category ${newCategory.name} created`,
+      data: newCategory,
+      id: newCategory.id
     });
   }
 
