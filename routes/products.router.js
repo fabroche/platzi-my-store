@@ -2,10 +2,15 @@ const {Router} = require('express');
 const {products} = require("../src/api/e-commerce");
 const {ProductModel} = require("../src/models/product.models.js");
 const {handlePagination} = require("../src/utils/utils");
+const ProductsService = require('../services/products.services.js');
 
 const productsRouter = Router();
+const productService = new ProductsService();
+
 
 productsRouter.get('/', (req, res) => {
+  const products = productService.getProducts();
+
   const {limit = products.length, offset = 0} = req.query;
 
   if (limit <= 0 || offset < 0) {
@@ -30,7 +35,7 @@ productsRouter.get('/', (req, res) => {
 
 productsRouter.get('/:id', (req, res) => {
   const {id} = req.params;
-  const result = products.find(product => product.id === id)
+  const result = productService.getProducts().find(product => product.id === id)
 
   if (!result) {
     res.status(404).send(`No existe ningun producto con id = ${id}`);
@@ -45,11 +50,15 @@ productsRouter.get('/:id', (req, res) => {
 productsRouter.post('/', (req, res) => {
   const body = req.body;
 
-  if (new ProductModel(body).isValid()) {
-    products.push(body)
+  const newProduct = productService.createProduct({
+    product: body
+  });
+
+  if (newProduct) {
     res.status(201).json({
-      message: `Producto ${body.name} created`,
-      data: body
+      message: `Producto ${newProduct.name} created`,
+      data: newProduct,
+      id: newProduct.id
     });
   }
 
@@ -61,14 +70,16 @@ productsRouter.put('/:id', (req, res) => {
   const {id} = req.params;
   const body = req.body;
 
-  const productIndex = products.findIndex(product => product.id === id);
+  const newProduct = productService.update({
+    id,
+    product: body
+  });
 
-  if (new ProductModel(body).isValid() && productIndex !== -1) {
-    products[productIndex] = {...body};
-
+  if (newProduct) {
     res.status(201).json({
-      message: `Producto ${body.id} updated`,
-      data: body
+      message: `Producto ${newProduct.id} updated`,
+      data: newProduct,
+      id: newProduct.id
     });
   }
 
@@ -80,24 +91,13 @@ productsRouter.patch('/:id', (req, res) => {
   const {id} = req.params;
   const body = req.body;
 
-  const productIndex = products.findIndex(product => product.id === id);
+  const newProduct = productService.update(id, body);
 
-  if (productIndex !== -1) {
-    const newPatchProduct = new ProductModel({
-      ...products[productIndex],
-      ...body
-    })
-
-    if (newPatchProduct.isValid()) {
-      products[productIndex] = {
-        ...newPatchProduct
-      };
-    }
-
+  if (newProduct) {
     res.status(201).json({
-      message: `Producto ${body.id} Partial updated`,
+      message: `Producto ${newProduct.id} Partial updated`,
       data: body,
-      id
+      id: newProduct.id
     });
   }
 
@@ -107,14 +107,13 @@ productsRouter.patch('/:id', (req, res) => {
 
 productsRouter.delete('/:id', (req, res) => {
   const {id} = req.params;
-  const productIndex = products.findIndex(product => product.id === id);
+  const deletedProduct = productService.delete({id})
 
-  if (productIndex !== -1) {
-    const deletedProduct = products.splice(productIndex, 1);
+  if (deletedProduct) {
     res.status(200).json({
-      message: `Producto ${id} deleted`,
+      message: `Producto ${deletedProduct.id} deleted`,
       data: deletedProduct,
-      id
+      id: deletedProduct.id
     })
   }
 
