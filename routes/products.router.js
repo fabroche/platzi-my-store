@@ -2,7 +2,7 @@ const {Router} = require('express');
 const {products} = require("../src/api/e-commerce");
 const {ProductModel} = require("../src/models/product.models.js");
 const {handlePagination} = require("../src/utils/utils");
-const ProductsService = require('../services/products.services.js');
+const {ProductsService} = require('../services/products.services.js');
 
 const productsRouter = Router();
 const productService = new ProductsService();
