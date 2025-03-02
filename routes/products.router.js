@@ -1,6 +1,4 @@
 const {Router} = require('express');
-const {products} = require("../src/api/e-commerce");
-const {ProductModel} = require("../src/models/product.models.js");
 const {handlePagination} = require("../src/utils/utils");
 const {ProductsService} = require('../services/products.services.js');
 
@@ -91,7 +89,10 @@ productsRouter.patch('/:id', (req, res) => {
   const {id} = req.params;
   const body = req.body;
 
-  const newProduct = productService.update(id, body);
+  const newProduct = productService.update({
+    id,
+    product: body
+  });
 
   if (newProduct) {
     res.status(201).json({
@@ -107,7 +108,7 @@ productsRouter.patch('/:id', (req, res) => {
 
 productsRouter.delete('/:id', (req, res) => {
   const {id} = req.params;
-  const deletedProduct = productService.delete({id})
+  const deletedProduct = productService.delete({id})[0]
 
   if (deletedProduct) {
     res.status(200).json({
