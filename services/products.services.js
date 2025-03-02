@@ -2,6 +2,10 @@ const {createArrayFromObject} = require("../src/utils/utils");
 const {ProductModel} = require("../src/models/product.models");
 const {faker} = require("@faker-js/faker");
 const {ENV} = require("../config");
+const {CategoriesService} = require("./categories.services.js");
+
+const categoriesService = new CategoriesService();
+const categories = categoriesService.getCategories();
 
 class ProductsService {
   constructor() {
@@ -74,4 +78,4 @@ class ProductsService {
   }
 }
 
-module.exports = ProductsService;
+module.exports = {ProductsService};
