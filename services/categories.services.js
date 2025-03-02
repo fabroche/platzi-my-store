@@ -1,7 +1,6 @@
 const {createArrayFromObject} = require("../src/utils/utils");
 const {CategoryModel} = require("../src/models/category.models");
 const {faker} = require("@faker-js/faker");
-const {categories} = require("../src/api/e-commerce");
 
 class CategoriesService {
   constructor() {
@@ -19,6 +18,67 @@ class CategoriesService {
 
   getCategories() {
     return this.categories;
+  }
+
+  findById({id}) {
+    const searchedCategory = this.categories.find(category => category.id === id)
+
+    if (searchedCategory) {
+      return searchedCategory;
+    }
+
+    return {};
+  }
+
+  getCategoryInProduct({categoryId, productId, products}) {
+    const result = products.find(product => product.categories.includes(categoryId) && product.id === productId);
+
+    if (result) {
+      return result;
+    }
+
+    return {}
+  }
+
+  getCategoryNamesByIdList({categoriesIdList = []}) {
+    const result = this.categories.filter(category => categoriesIdList.includes(category.id));
+
+    if (result) {
+      return result;
+    }
+
+    return [];
+  }
+
+  getCategoryInProductsById({categoryId, products}) {
+
+    const result = products
+      .filter(product => product.categories.includes(categoryId))
+      .map(product => {
+        return {
+          ...product,
+          categories: this.getCategoryNamesByIdList({
+            categoriesIdList: product.categories
+          })
+        };
+      });
+
+    if (result) {
+      return result;
+    }
+
+    return [];
+  }
+
+  createCategory({category}) {
+    const newCategory = new CategoryModel(category);
+
+    if (newCategory.isValid()) {
+      this.categories.push(newCategory);
+      return newCategory;
+    }
+
+    return {};
   }
 }
 
