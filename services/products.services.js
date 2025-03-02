@@ -5,7 +5,6 @@ const {ENV} = require("../config");
 const {CategoriesService} = require("./categories.services.js");
 
 const categoriesService = new CategoriesService();
-const categories = categoriesService.getCategories();
 
 class ProductsService {
   constructor() {
@@ -15,6 +14,7 @@ class ProductsService {
 
   generate() {
     const limit = 20;
+    const categories = categoriesService.getCategories();
     this.products = createArrayFromObject(limit, () => (new ProductModel({
       id: faker.database.mongodbObjectId(),
       name: faker.commerce.productName(),
