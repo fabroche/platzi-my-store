@@ -1,5 +1,3 @@
-const {products} = require("../api/e-commerce");
-
 class ProductModel {
   constructor({
                 id,
