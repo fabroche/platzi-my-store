@@ -1,33 +1,15 @@
-const {createArrayFromObject} = require("../src/utils/utils");
 const {ProductModel} = require("../src/models/product.models");
-const {faker} = require("@faker-js/faker");
-const {ENV} = require("../config");
-const {CategoriesService} = require("./categories.services.js");
+const {products} = require("../src/api/e-commerce");
 
-const categoriesService = new CategoriesService();
 
 class ProductsService {
   constructor() {
     this.products = [];
-    this.generate();
+    this.setUp();
   }
 
-  generate() {
-    const limit = 20;
-    const categories = categoriesService.getCategories();
-    this.products = createArrayFromObject(limit, () => (new ProductModel({
-      id: faker.database.mongodbObjectId(),
-      name: faker.commerce.productName(),
-      price: faker.commerce.price(),
-      currency: ENV.CURRENCY,
-      categories: createArrayFromObject(
-        Math.floor(Math.random() * categories.length) + 1
-        , () => (
-          categories[Math.floor(Math.random() * categories.length)].id
-        )),
-      description: faker.commerce.productDescription(),
-      image: faker.image.url({width: ENV.PRODUCT_IMAGE_W, height: ENV.PRODUCT_IMAGE_H}),
-    })))
+  setUp() {
+    this.products = products
   }
 
   getProducts() {
