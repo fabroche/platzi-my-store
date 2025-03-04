@@ -1,19 +1,14 @@
-const {createArrayFromObject} = require("../src/utils/utils");
 const {CategoryModel} = require("../src/models/category.models");
-const {faker} = require("@faker-js/faker");
+const {categories} = require("../src/api/e-commerce");
 
 class CategoriesService {
   constructor() {
     this.categories = [];
-    this.generate()
+    this.setUp();
   }
 
-  generate() {
-    const limit = 5;
-    this.categories = createArrayFromObject(limit, () => (new CategoryModel({
-      id: faker.database.mongodbObjectId(),
-      name: faker.commerce.productAdjective(),
-    })))
+  setUp() {
+    this.categories = categories;
   }
 
   getCategories() {
