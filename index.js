@@ -2,6 +2,12 @@ const {ENV} = require('./config.js');
 
 const express = require('express');
 const {routerApi} = require('./routes/index.js');
+const {
+  logErrorsMiddleware,
+  errorHandlerMiddleware,
+  boomErrorHandlerMiddleware
+} = require('./middlewares/error.handler.js');
+
 const app = express();
 const port = ENV.PORT;
 app.use(express.json());
@@ -28,6 +34,9 @@ app.get('/send-limit-offset', (req, res) => {
 })
 
 routerApi(app);
+app.use(logErrorsMiddleware);
+app.use(boomErrorHandlerMiddleware);
+app.use(errorHandlerMiddleware);
 
 app.listen(port, () => {
   console.log(`Listening on port :${port}`);
