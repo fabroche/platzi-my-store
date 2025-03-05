@@ -12,15 +12,15 @@ class ProductsService {
     this.products = products
   }
 
-  getProducts() {
+  async getProducts() {
     return this.products
   }
 
-  findProductById({id}) {
+  async findProductById({id}) {
     return this.products.find(item => item.id === id);
   }
 
-  createProduct({product}) {
+  async createProduct({product}) {
     const newProduct = new ProductModel(product)
     if (!newProduct.isValid()) {
       return {}
@@ -29,8 +29,7 @@ class ProductsService {
     return newProduct;
   }
 
-
-  update({id, product}) {
+  async update({id, product}) {
 
     const productIndex = this.products.findIndex(product => product.id === id);
 
@@ -50,11 +49,11 @@ class ProductsService {
 
   }
 
-  delete({id}) {
+  async delete({id}) {
     const productIndex = this.products.findIndex(product => product.id === id);
     if (productIndex !== -1) {
       const deletedProduct = this.products.splice(productIndex, 1);
-      return deletedProduct;
+      return deletedProduct[0];
     }
     return {};
   }

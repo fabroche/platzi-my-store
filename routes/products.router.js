@@ -6,8 +6,8 @@ const productsRouter = Router();
 const productService = new ProductsService();
 
 
-productsRouter.get('/', (req, res) => {
-  const products = productService.getProducts();
+productsRouter.get('/', async (req, res) => {
+  const products = await productService.getProducts();
 
   const {limit = products.length, offset = 0} = req.query;
 
@@ -31,9 +31,9 @@ productsRouter.get('/', (req, res) => {
 
 })
 
-productsRouter.get('/:id', (req, res) => {
+productsRouter.get('/:id', async (req, res) => {
   const {id} = req.params;
-  const result = productService.getProducts().find(product => product.id === id)
+  const result = await productService.getProducts().find(product => product.id === id)
 
   if (!result) {
     res.status(404).send(`No existe ningun producto con id = ${id}`);
@@ -45,10 +45,10 @@ productsRouter.get('/:id', (req, res) => {
 
 })
 
-productsRouter.post('/', (req, res) => {
+productsRouter.post('/', async (req, res) => {
   const body = req.body;
 
-  const newProduct = productService.createProduct({
+  const newProduct = await productService.createProduct({
     product: body
   });
 
@@ -64,11 +64,11 @@ productsRouter.post('/', (req, res) => {
 
 })
 
-productsRouter.put('/:id', (req, res) => {
+productsRouter.put('/:id', async (req, res) => {
   const {id} = req.params;
   const body = req.body;
 
-  const newProduct = productService.update({
+  const newProduct = await productService.update({
     id,
     product: body
   });
@@ -85,11 +85,11 @@ productsRouter.put('/:id', (req, res) => {
 
 })
 
-productsRouter.patch('/:id', (req, res) => {
+productsRouter.patch('/:id', async (req, res) => {
   const {id} = req.params;
   const body = req.body;
 
-  const newProduct = productService.update({
+  const newProduct = await productService.update({
     id,
     product: body
   });
@@ -106,9 +106,9 @@ productsRouter.patch('/:id', (req, res) => {
 
 })
 
-productsRouter.delete('/:id', (req, res) => {
+productsRouter.delete('/:id', async (req, res) => {
   const {id} = req.params;
-  const deletedProduct = productService.delete({id})[0]
+  const deletedProduct = await productService.delete({id})
 
   if (deletedProduct) {
     res.status(200).json({
