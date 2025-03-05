@@ -1,5 +1,7 @@
 const {CategoryModel} = require("../src/models/category.models");
 const {categories} = require("../src/api/e-commerce");
+const boom = require("@hapi/boom");
+
 
 class CategoriesService {
   constructor() {
@@ -11,69 +13,69 @@ class CategoriesService {
     this.categories = categories;
   }
 
-  getCategories() {
+  async getCategories() {
     return this.categories;
   }
 
-  findById({id}) {
+  async findById({id}) {
     const searchedCategory = this.categories.find(category => category.id === id)
 
-    if (searchedCategory) {
-      return searchedCategory;
+    if (!searchedCategory) {
+      throw boom.notFound(`Category with id = ${id} not found`);
     }
 
-    return {};
+    return searchedCategory;
   }
 
-  getCategoryInProduct({categoryId, productId, products}) {
+  async getCategoryInProduct({categoryId, productId, products}) {
     const result = products.find(product => product.categories.includes(categoryId) && product.id === productId);
 
-    if (result) {
-      return result;
+    if (!result) {
+      throw boom.notFound(`Product with id = ${productId} and with Category id = ${categoryId} not found`);
     }
 
-    return {}
+    return result;
   }
 
-  getCategoryNamesByIdList({categoriesIdList = []}) {
+  async getCategoryNamesByIdList({categoriesIdList = []}) {
     const result = this.categories.filter(category => categoriesIdList.includes(category.id));
 
-    if (result) {
-      return result;
+    if (!result?.length) {
+      throw boom.notFound("Categories not found");
     }
+    return result;
 
-    return [];
   }
 
-  getCategoryInProductsById({categoryId, products}) {
+  async getCategoryInProductsById({categoryId, products}) {
 
-    const result = products
+    const result = await Promise.all(products
       .filter(product => product.categories.includes(categoryId))
-      .map(product => {
+      .map(async (product) => {
         return {
           ...product,
-          categories: this.getCategoryNamesByIdList({
+          categories: await this.getCategoryNamesByIdList({
             categoriesIdList: product.categories
           })
         };
-      });
+      }));
 
-    if (result) {
-      return result;
+    if (!result?.length) {
+      throw boom.notFound(`Products with categoryId = ${categoryId} not found`);
     }
 
-    return [];
+    return result;
   }
 
-  createCategory({category}) {
+  async createCategory({category}) {
     const newCategory = new CategoryModel(category);
 
-    if (newCategory.isValid()) {
-      this.categories.push(newCategory);
-      return newCategory;
+    if (!newCategory.isValid()) {
+      throw boom.badData("Category dont match with a valid CategoryModel instance");
     }
 
-    return {};
+    this.categories.push(newCategory);
+    return newCategory;
   }
 }
 
