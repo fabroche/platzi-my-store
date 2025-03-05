@@ -6,119 +6,130 @@ const productsRouter = Router();
 const productService = new ProductsService();
 
 
-productsRouter.get('/', async (req, res) => {
-  const products = await productService.getProducts();
+productsRouter.get('/', async (req, res, next) => {
+  try {
 
-  const {limit = products.length, offset = 0} = req.query;
+    const products = await productService.getProducts();
 
-  if (limit <= 0 || offset < 0) {
-    res.status(404).send('Limit tiene que ser mayor que 0 y Offset no puede se menor que 0');
-  }
+    const {limit = products.length, offset = 0} = req.query;
 
-  const result = handlePagination({
-    limit,
-    offset,
-    itemList: products
-  });
+    if (limit <= 0 || offset < 0) {
+      res.status(404).send('Limit tiene que ser mayor que 0 y Offset no puede se menor que 0');
+    }
 
-  if (!result?.length) {
-    res.status(404).send('No se encontraron productos');
-  }
-
-  res.status(200).json([
-    ...result
-  ]);
-
-})
-
-productsRouter.get('/:id', async (req, res) => {
-  const {id} = req.params;
-  const result = await productService.getProducts().find(product => product.id === id)
-
-  if (!result) {
-    res.status(404).send(`No existe ningun producto con id = ${id}`);
-  }
-
-  res.json({
-    ...result
-  });
-
-})
-
-productsRouter.post('/', async (req, res) => {
-  const body = req.body;
-
-  const newProduct = await productService.createProduct({
-    product: body
-  });
-
-  if (newProduct) {
-    res.status(201).json({
-      message: `Producto ${newProduct.name} created`,
-      data: newProduct,
-      id: newProduct.id
+    const result = handlePagination({
+      limit,
+      offset,
+      itemList: products
     });
-  }
 
-  res.status(400).send('Bad request: This is not a valid product');
+    if (!result?.length) {
+      res.status(404).send('No se encontraron productos');
+    }
+
+    res.status(200).json([
+      ...result
+    ]);
+  } catch (error) {
+    next(error);
+  }
 
 })
 
-productsRouter.put('/:id', async (req, res) => {
-  const {id} = req.params;
-  const body = req.body;
+productsRouter.get('/:id', async (req, res, next) => {
+  try {
+    const {id} = req.params;
+    const result = await productService.findProductById({id});
 
-  const newProduct = await productService.update({
-    id,
-    product: body
-  });
-
-  if (newProduct) {
-    res.status(201).json({
-      message: `Producto ${newProduct.id} updated`,
-      data: newProduct,
-      id: newProduct.id
+    res.json({
+      ...result
     });
+  } catch (error) {
+    next(error);
   }
-
-  res.status(400).send('Bad request: This is not a valid product');
-
 })
 
-productsRouter.patch('/:id', async (req, res) => {
-  const {id} = req.params;
-  const body = req.body;
+productsRouter.post('/', async (req, res, next) => {
+  try {
+    const body = req.body;
 
-  const newProduct = await productService.update({
-    id,
-    product: body
-  });
-
-  if (newProduct) {
-    res.status(201).json({
-      message: `Producto ${newProduct.id} Partial updated`,
-      data: body,
-      id: newProduct.id
+    const newProduct = await productService.createProduct({
+      product: body
     });
-  }
 
-  res.status(400).send('Bad request: This is not a valid product');
+    if (newProduct) {
+      res.status(201).json({
+        message: `Producto ${newProduct.name} created`,
+        data: newProduct,
+        id: newProduct.id
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+})
+
+productsRouter.put('/:id', async (req, res, next) => {
+  try {
+
+    const {id} = req.params;
+    const body = req.body;
+
+    const newProduct = await productService.update({
+      id,
+      product: body
+    });
+
+    if (newProduct) {
+      res.status(201).json({
+        message: `Producto ${newProduct.id} updated`,
+        data: newProduct,
+        id: newProduct.id
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
 
 })
 
-productsRouter.delete('/:id', async (req, res) => {
-  const {id} = req.params;
-  const deletedProduct = await productService.delete({id})
+productsRouter.patch('/:id', async (req, res, next) => {
+  try {
+    const {id} = req.params;
+    const body = req.body;
 
-  if (deletedProduct) {
-    res.status(200).json({
-      message: `Producto ${deletedProduct.id} deleted`,
-      data: deletedProduct,
-      id: deletedProduct.id
-    })
+    const newProduct = await productService.update({
+      id,
+      product: body
+    });
+
+    if (newProduct) {
+      res.status(201).json({
+        message: `Producto ${newProduct.id} Partial updated`,
+        data: body,
+        id: newProduct.id
+      });
+    }
+  } catch (error) {
+    next(error);
   }
+})
 
-  res.status(400).send(`Bad request: there is no product with id= ${id}`);
+productsRouter.delete('/:id', async (req, res, next) => {
+  try {
+    const {id} = req.params;
+    const deletedProduct = await productService.delete({id})
+
+    if (deletedProduct) {
+      res.status(200).json({
+        message: `Producto ${deletedProduct.id} deleted`,
+        data: deletedProduct,
+        id: deletedProduct.id
+      })
+    }
+  } catch (error) {
+    next(error);
+  }
 })
 
 module.exports = {

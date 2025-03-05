@@ -1,6 +1,6 @@
 const {ProductModel} = require("../src/models/product.models");
 const {products} = require("../src/api/e-commerce");
-
+const boom = require("@hapi/boom");
 
 class ProductsService {
   constructor() {
@@ -17,13 +17,17 @@ class ProductsService {
   }
 
   async findProductById({id}) {
-    return this.products.find(item => item.id === id);
+    const product = this.products.find(item => item.id === id);
+    if (!product) {
+      throw boom.notFound(`Product with id = ${id} not found`);
+    }
+    return product;
   }
 
   async createProduct({product}) {
     const newProduct = new ProductModel(product)
     if (!newProduct.isValid()) {
-      return {}
+      throw boom.badData("Product dont match with a valid ProductModel instance");
     }
     this.products.push(newProduct);
     return newProduct;
@@ -33,29 +37,31 @@ class ProductsService {
 
     const productIndex = this.products.findIndex(product => product.id === id);
 
-    if (productIndex !== -1) {
-      const toUpdateProduct = new ProductModel({
-        ...this.products[productIndex],
-        ...product
-      });
-
-      if (toUpdateProduct.isValid()) {
-        this.products[productIndex] = {...toUpdateProduct};
-        return toUpdateProduct;
-      }
+    if (productIndex === -1) {
+      throw boom.notFound('Product not found');
     }
 
-    return {};
+    const toUpdateProduct = new ProductModel({
+      ...this.products[productIndex],
+      ...product
+    });
+
+    if (!toUpdateProduct.isValid()) {
+      throw boom.badData("Product not valid");
+    }
+
+    this.products[productIndex] = {...toUpdateProduct};
+    return toUpdateProduct;
 
   }
 
   async delete({id}) {
     const productIndex = this.products.findIndex(product => product.id === id);
-    if (productIndex !== -1) {
-      const deletedProduct = this.products.splice(productIndex, 1);
-      return deletedProduct[0];
+    if (productIndex === -1) {
+      throw boom.notFound('Product not found');
     }
-    return {};
+    const deletedProduct = this.products.splice(productIndex, 1);
+    return deletedProduct[0];
   }
 }
 
