@@ -12,16 +12,21 @@ class ProductsService {
     this.products = products
   }
 
+  _findProductIndex({id}) {
+    const index = this.products.findIndex(item => item.id === id);
+    if (index === -1) {
+      throw boom.notFound(`Producto con id ${id} no encontrado`);
+    }
+    return index;
+  }
+
   async getProducts() {
     return this.products
   }
 
   async findProductById({id}) {
-    const product = this.products.find(item => item.id === id);
-    if (!product) {
-      throw boom.notFound(`Product with id = ${id} not found`);
-    }
-    return product;
+    const productIndex = this._findProductIndex({id})
+    return this.products[productIndex];
   }
 
   async createProduct({product}) {
@@ -35,14 +40,15 @@ class ProductsService {
 
   async update({id, product}) {
 
-    const productIndex = this.products.findIndex(product => product.id === id);
-
-    if (productIndex === -1) {
-      throw boom.notFound('Product not found');
+    if (!product || Object.keys(product).length === 0) {
+      throw boom.badData("No hay datos para actualizar");
     }
 
+    const productIndex = this._findProductIndex({id});
+    const currentProduct = this.products[productIndex]
+
     const toUpdateProduct = new ProductModel({
-      ...this.products[productIndex],
+      ...currentProduct,
       ...product
     });
 
@@ -50,16 +56,13 @@ class ProductsService {
       throw boom.badData("Product not valid");
     }
 
-    this.products[productIndex] = {...toUpdateProduct};
+    this.products[productIndex] = toUpdateProduct;
     return toUpdateProduct;
 
   }
 
   async delete({id}) {
-    const productIndex = this.products.findIndex(product => product.id === id);
-    if (productIndex === -1) {
-      throw boom.notFound('Product not found');
-    }
+    const productIndex = this._findProductIndex({id})
     const deletedProduct = this.products.splice(productIndex, 1);
     return deletedProduct[0];
   }
