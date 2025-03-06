@@ -1,5 +1,6 @@
 const joi = require("joi");
 const boom = require('@hapi/boom')
+
 class ProductModel {
 
   static schema = joi.object({
