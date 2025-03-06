@@ -1,13 +1,12 @@
-const joi = require('joi');
-const Joi = require("joi");
-
+const joi = require("joi");
+const boom = require('@hapi/boom')
 class ProductModel {
 
   static schema = joi.object({
-    id: Joi.string().required(),
-    name: Joi.string().required(),
+    id: joi.string().required(),
+    name: joi.string().required(),
     price: joi.number().positive().required(),
-    currency: Joi.string().length(3).case("upper").required(),
+    currency: joi.string().length(3).uppercase().required(),
     categories: joi.array().items(joi.string()).min(1).required(),
     description: joi.string().required(),
     image: joi.string().uri().required(),
@@ -25,7 +24,7 @@ class ProductModel {
     this.id = id;
     this.name = name;
     this.price = price;
-    this.currency = currency;
+    this.currency = currency.toUpperCase();
     this.categories = categories;
     this.description = description;
     this.image = image;
@@ -48,6 +47,10 @@ class ProductModel {
     });
 
     const validation = singleAttributeSchema.validate(objToValidate);
+
+    if (validation.error) {
+      throw boom.badData(validation.error.message);
+    }
 
     return !validation.error;
   }
