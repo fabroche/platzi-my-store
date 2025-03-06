@@ -1,4 +1,18 @@
+const joi = require('joi');
+const Joi = require("joi");
+
 class ProductModel {
+
+  static schema = joi.object({
+    id: Joi.string().required(),
+    name: Joi.string().required(),
+    price: joi.number().positive().required(),
+    currency: Joi.string().length(3).case("upper").required(),
+    categories: joi.array().items(joi.string()).min(1).required(),
+    description: joi.string().required(),
+    image: joi.string().uri().required(),
+  });
+
   constructor({
                 id,
                 name,
@@ -17,35 +31,54 @@ class ProductModel {
     this.image = image;
   }
 
+  validateData() {
+    const validation = ProductModel.schema.validate(this, {abortEarly: false});
+    return {
+      isValid: !validation.error,
+      errors: validation.error ? validation.error.details : null,
+    }
+  }
+
+  _validateAttribute(attribute,value) {
+    const objToValidate = {};
+    objToValidate[attribute] = value;
+
+    const singleAttributeSchema = joi.object({
+      [attribute]: ProductModel.schema.extract(attribute)
+    });
+
+    const validation = singleAttributeSchema.validate(objToValidate);
+
+    return !validation.error;
+  }
+
   // Validadores individuales
   isValidId() {
-    return typeof this.id === 'string';
+    return this._validateAttribute("id", this.id);
   }
 
   isValidName() {
-    return typeof this.name === 'string';
+    return this._validateAttribute("name", this.name);
   }
 
   isValidPrice() {
-    return typeof this.price === 'number';
+    return this._validateAttribute("price", this.price);
   }
 
   isValidCurrency() {
-    return typeof this.currency === 'string';
+    return this._validateAttribute("currency", this.currency);
   }
 
   isValidCategories() {
-    return Array.isArray(this.categories) &&
-      this.categories.length > 0 &&
-      this.categories.every(cat => typeof cat === 'string');
+    return this._validateAttribute("categories", this.categories);
   }
 
   isValidDescription() {
-    return typeof this.description === 'string';
+    return this._validateAttribute("description", this.description);
   }
 
   isValidImage() {
-    return typeof this.image === 'string';
+    return this._validateAttribute("image", this.image);
   }
 
   // Validador general que utiliza los validadores individuales
