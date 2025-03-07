@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .data-list {
+            padding: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            list-style: none;
+        }
+
+        .data-list li {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 12px;
+            width: 300px;
+            height: 400px;
+            padding: 8px 12px;
+            background-color: aliceblue;
+            border-radius: 6px;
+            cursor: pointer;
+            scale: 0.93;
+            transition: all 0.3s ease-in-out;
+            &:hover {
+                scale: 1;
+            }
+        }
+
+        .categories-list {
+            display: flex;
+            list-style: none;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            align-items: center;
+            width: 100%;
+            height: auto;
+            gap: 6px;
+        }
+
+        .categories-list li {
+            text-align: center;
+            flex-grow: 1;
+            height: fit-content;
+            width: fit-content;
+            background-color: white;
+        }
+
+        .data-list li h3 {
+            align-self: flex-start;
+        }
+
+        .data-list li h2 {
+            align-self: flex-start;
+        }
+
+        .data-list li img {
+            object-fit: cover;
+            aspect-ratio: 16/9;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+<script>
+    (async () => {
+        const response = await fetch('http://localhost:3000/api/v1/products');
+        const data = await response.json();
+        console.log(data);
+        document.querySelector('.data-list').innerHTML = await renderData(data);
+    })();
+
+    async function getCategoryDetails(categoryId) {
+        const response = await fetch('http://localhost:3000/api/v1/categories/' + categoryId);
+        const categoryDetails = await response.json();
+        return `<li>${categoryDetails.name}</li>`;
+    }
+
+    async function renderData(data) {
+
+        const productPromises = data.map(async (item) => {
+            const categoryPromises = item.categories.map(
+                async (categoryId) => await getCategoryDetails(categoryId)
+            )
+
+            const resolvedCategories = await Promise.all(categoryPromises);
+
+            const productCard = `<li>
+            <h2>${item.name}</h2>
+            <h3>${item.price} ${item.currency}</h3>
+            <img
+                src=${item.image}
+                alt=${item.name + ' Image'}
+                width="100%"
+                height="100"
+            >
+            <ul class="categories-list">
+                ${resolvedCategories.join('')}
+            </ul>
+            <p>${item.description}</p>
+        </li>`
+
+            return productCard;
+        });
+
+        return (await Promise.all(productPromises)).join('');
+    }
+</script>
+<ul class="data-list">
+
+</ul>
+
+</body>
+</html>
