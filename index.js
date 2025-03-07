@@ -7,10 +7,22 @@ const {
   errorHandlerMiddleware,
   boomErrorHandlerMiddleware
 } = require('./middlewares/error.handler.js');
+const cors = require("cors");
 
 const app = express();
 const port = ENV.PORT;
 app.use(express.json());
+const whitelist = ['http://localhost:8080', 'http://localhost:8000', 'https://myapp.co'];
+const options = {
+  origin: (origin, callback) => {
+    if (!whitelist.includes(origin)) {
+      callback(new Error(`Unknown origin: ${origin}`), false);
+    } else {
+      callback(null, true);
+    }
+  }
+}
+app.use(cors(options));
 
 app.get('/', (req, res) => {
   res.send('Hola mundo, este es mi primer server en express');
