@@ -33,13 +33,18 @@ class ProductModel {
 
   validateData() {
     const validation = ProductModel.schema.validate(this, {abortEarly: false});
+
+    if (validation.error) {
+      throw boom.badData(validation.error.message);
+    }
+
     return {
       isValid: !validation.error,
       errors: validation.error ? validation.error.details : null,
     }
   }
 
-  _validateAttribute(attribute,value) {
+  _validateAttribute(attribute, value) {
     const objToValidate = {};
     objToValidate[attribute] = value;
 
@@ -87,13 +92,7 @@ class ProductModel {
 
   // Validador general que utiliza los validadores individuales
   isValid() {
-    return this.isValidId() &&
-      this.isValidName() &&
-      this.isValidPrice() &&
-      this.isValidCurrency() &&
-      this.isValidCategories() &&
-      this.isValidDescription() &&
-      this.isValidImage();
+    return this.validateData().isValid;
   }
 }
 

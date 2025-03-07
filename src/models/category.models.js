@@ -15,6 +15,11 @@ class CategoryModel {
 
   validateData() {
     const validation = CategoryModel.schema.validate(this, {abortEarly: false});
+
+    if (validation.error) {
+      throw boom.badData(validation.error.message);
+    }
+
     return {
       isValid: !validation.error,
       errors: validation.error ? validation.error.details : null,
@@ -48,7 +53,7 @@ class CategoryModel {
   }
 
   isValid() {
-    return this.isValidId() && this.isValidName();
+    return this.validateData().isValid;
   }
 }
 
