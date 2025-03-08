@@ -10,15 +10,15 @@ const {
 const cors = require("cors");
 
 const app = express();
-const port = ENV.PORT;
+const port = ENV.MY_PORT;
 app.use(express.json());
-const whitelist = ['http://localhost:8080', 'http://localhost:8000', 'https://myapp.co'];
+const whitelist = ENV.CORS_WHITE_LIST.split(',');
 const options = {
   origin: (origin, callback) => {
-    if (!whitelist.includes(origin)) {
-      callback(new Error(`Unknown origin: ${origin}`), false);
-    } else {
+    if (whitelist.includes(origin) || !origin) {
       callback(null, true);
+    } else {
+      callback(new Error(`Unknown origin: ${origin}`), false);
     }
   }
 }
