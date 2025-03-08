@@ -24,10 +24,6 @@ const options = {
 }
 app.use(cors(options));
 
-app.get('/api', (req, res) => {
-  res.send('Hola mundo, este es mi primer server en express');
-})
-
 routerApi(app);
 app.use(logErrorsMiddleware);
 app.use(boomErrorHandlerMiddleware);
