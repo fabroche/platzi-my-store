@@ -1,12 +1,12 @@
-const {ENV} = require('./config.js');
+const {ENV} = require('./api/config.js');
 
 const express = require('express');
-const {routerApi} = require('./routes');
+const {routerApi} = require('./api/routes');
 const {
   logErrorsMiddleware,
   errorHandlerMiddleware,
   boomErrorHandlerMiddleware
-} = require('./middlewares/error.handler.js');
+} = require('./api/middlewares/error.handler.js');
 const cors = require("cors");
 
 const app = express();
@@ -23,6 +23,10 @@ const options = {
   }
 }
 app.use(cors(options));
+
+app.get('/', (req, res) => {
+  res.send("Express on Vercel")
+})
 
 routerApi(app);
 app.use(logErrorsMiddleware);
