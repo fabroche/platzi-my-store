@@ -28,23 +28,6 @@ app.get('/api', (req, res) => {
   res.send('Hola mundo, este es mi primer server en express');
 })
 
-app.get('/api/nuevo-endpoint', (req, res) => {
-  res.send('Hola soy el nuevo endpoint');
-})
-
-app.get('/api/send-limit-offset', (req, res) => {
-  const {limit, offset} = req.query;
-
-  if (!limit || !offset) {
-    return res.status(400).send('Los parámetros limit y offset son obligatorios.');
-  }
-
-  res.json({
-    limit,
-    offset
-  })
-})
-
 routerApi(app);
 app.use(logErrorsMiddleware);
 app.use(boomErrorHandlerMiddleware);
