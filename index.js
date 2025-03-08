@@ -10,7 +10,7 @@ const {
 const cors = require("cors");
 
 const app = express();
-const port = ENV.MY_PORT;
+const port = ENV.PORT || 3000;
 app.use(express.json());
 const whitelist = ENV.CORS_WHITE_LIST.split(',');
 const options = {
