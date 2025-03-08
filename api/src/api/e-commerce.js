@@ -1,7 +1,7 @@
 const {createArrayFromObject} = require("../utils/utils");
 const {ProductModel} = require("../models/product.models.js");
 const {faker} = require("@faker-js/faker");
-const {ENV} = require("../../config");
+const {ENV} = require("../../../config");
 const {CategoryModel} = require("../models/category.models");
 
 function generateProducts({limit = 5, categories = []}) {

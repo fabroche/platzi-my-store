@@ -1,7 +1,7 @@
-const {ENV} = require('./config.js');
+const {ENV} = require('../config.js');
 
 const express = require('express');
-const {routerApi} = require('./routes/index.js');
+const {routerApi} = require('./routes');
 const {
   logErrorsMiddleware,
   errorHandlerMiddleware,
@@ -24,15 +24,15 @@ const options = {
 }
 app.use(cors(options));
 
-app.get('/', (req, res) => {
+app.get('/api', (req, res) => {
   res.send('Hola mundo, este es mi primer server en express');
 })
 
-app.get('/nuevo-endpoint', (req, res) => {
+app.get('/api/nuevo-endpoint', (req, res) => {
   res.send('Hola soy el nuevo endpoint');
 })
 
-app.get('/send-limit-offset', (req, res) => {
+app.get('/api/send-limit-offset', (req, res) => {
   const {limit, offset} = req.query;
 
   if (!limit || !offset) {
