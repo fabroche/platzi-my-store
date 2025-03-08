@@ -1,4 +1,4 @@
-const {ENV} = require('../config.js');
+const {ENV} = require('./config.js');
 
 const express = require('express');
 const {routerApi} = require('./routes');
@@ -37,4 +37,4 @@ app.listen(port, () => {
   console.log(`Listening on port :${port}`);
 })
 
-module.exports = app;
+// module.exports = app;
