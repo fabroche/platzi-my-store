@@ -1,7 +1,7 @@
 const {Client} = require('pg');
 const {ENV} = require('../config.js');
 
-async function getConection() {
+async function getConnection() {
 
   const client = new Client({
     host: ENV.POSTGRES_HOST,
@@ -15,5 +15,5 @@ async function getConection() {
 }
 
 module.exports = {
-  getConection
+  getConnection
 };

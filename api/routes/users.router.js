@@ -1,10 +1,13 @@
-const {users} = require("../src/api/e-commerce");
 const {handlePagination} = require("../src/utils/utils");
 const {Router} = require("express");
+const {UserService} = require("../services/user.service")
 
 const usersRouter = Router();
 
 usersRouter.get('/', (req, res) => {
+  const userService = new UserService();
+
+  const users = userService.find();
 
   const {limit = users.length, offset = 0} = req.query;
 
