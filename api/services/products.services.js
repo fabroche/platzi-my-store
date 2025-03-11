@@ -1,5 +1,6 @@
 const {ProductModel} = require("../src/models/product.models");
-const {products} = require("../src/api/e-commerce");
+const {CategoryModel} = require("../src/models/category.models");
+const {generateProducts, saveItemsIntoDB} = require("../src/api/e-commerce");
 const boom = require("@hapi/boom");
 const {pool} = require("../libs/postgres.pool.js")
 
@@ -7,6 +8,7 @@ const {pool} = require("../libs/postgres.pool.js")
 class ProductsService {
   constructor() {
     this.products = [];
+    this.modelName = ProductModel.modelName;
     this.pool = pool;
     this.pool.on("error", (err) => console.log(err));
     this.setUp();
@@ -16,21 +18,16 @@ class ProductsService {
     this.getProducts().then(result => this.products = result).catch(err => console.log(err));
   }
 
-  async generate() {
-    const resetQuery = "TRUNCATE TABLE PRODUCTS"
-    await pool.query(resetQuery);
+  async generate({categories}) {
+    const generatedProducts = generateProducts({
+      limit:5,
+      categories: categories
+    });
 
-    await Promise.all(products.map(async (product) => {
-      delete product.categories;
-      const keys = Object.keys(product);
-      const values = Object.values(product);
-      const placeholders = values.map((_, index) => `$${index + 1}`).join(',');
-      const query = `INSERT INTO PRODUCTS (${keys.join(',')})
-                       VALUES (${placeholders})`;
-      await pool.query(query, values);
-    }))
-
-    return await this.pool.query("SELECT * FROM products");
+    return await saveItemsIntoDB({
+      data: generatedProducts,
+      tableName: CategoryModel.modelName,
+    });
   }
 
   _findProductIndex({id}) {
