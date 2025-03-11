@@ -1,15 +1,36 @@
 const {ProductModel} = require("../src/models/product.models");
 const {products} = require("../src/api/e-commerce");
 const boom = require("@hapi/boom");
+const {pool} = require("../libs/postgres.pool.js")
+
 
 class ProductsService {
   constructor() {
     this.products = [];
+    this.pool = pool;
+    this.pool.on("error", (err) => console.log(err));
     this.setUp();
   }
 
   setUp() {
-    this.products = products
+    this.getProducts().then(result => this.products = result).catch(err => console.log(err));
+  }
+
+  async generate() {
+    const resetQuery = "TRUNCATE TABLE PRODUCTS"
+    await pool.query(resetQuery);
+
+    await Promise.all(products.map(async (product) => {
+      delete product.categories;
+      const keys = Object.keys(product);
+      const values = Object.values(product);
+      const placeholders = values.map((_, index) => `$${index + 1}`).join(',');
+      const query = `INSERT INTO PRODUCTS (${keys.join(',')})
+                       VALUES (${placeholders})`;
+      await pool.query(query, values);
+    }))
+
+    return await this.pool.query("SELECT * FROM products");
   }
 
   _findProductIndex({id}) {
@@ -21,7 +42,9 @@ class ProductsService {
   }
 
   async getProducts() {
-    return this.products
+    const query = "SELECT * FROM products";
+    const response = await this.pool.query(query);
+    return response.rows.map(product => new ProductModel(product));
   }
 
   async findProductById({id}) {
