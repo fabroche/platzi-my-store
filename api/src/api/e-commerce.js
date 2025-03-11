@@ -3,6 +3,7 @@ const {ProductModel} = require("../models/product.models.js");
 const {faker} = require("@faker-js/faker");
 const {ENV} = require("../../config");
 const {CategoryModel} = require("../models/category.models");
+const {pool} = require("../../libs/postgres.pool");
 
 function generateProducts({limit = 5, categories = []}) {
 
@@ -26,6 +27,24 @@ function generateCategories({limit = 5}) {
     id: faker.database.mongodbObjectId(),
     name: faker.commerce.productAdjective(),
   })))
+}
+
+async function saveItemsIntoDB({tableName, data, keepOldData = false}) {
+  if (!keepOldData) {
+    const resetQuery = `DELETE FROM ${tableName}`
+    await pool.query(resetQuery);
+  }
+
+  await Promise.all(data.map(async (item) => {
+    const keys = Object.keys(item);
+    const values = Object.values(item);
+    const placeholders = values.map((_, index) => `$${index + 1}`).join(',');
+    const query = `INSERT INTO ${tableName} (${keys.join(',')})
+                   VALUES (${placeholders})`;
+    await pool.query(query, values);
+  }))
+
+  return await pool.query(`SELECT * FROM ${tableName}`);
 }
 
 const categories = generateCategories({limit: 5});
@@ -98,4 +117,7 @@ module.exports = {
   permissions,
   categories,
   products,
+  generateProducts,
+  generateCategories,
+  saveItemsIntoDB
 }
