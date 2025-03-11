@@ -1,30 +1,48 @@
 const {CategoryModel} = require("../src/models/category.models");
-const {categories} = require("../src/api/e-commerce");
+const {generateCategories,saveItemsIntoDB} = require("../src/api/e-commerce");
 const boom = require("@hapi/boom");
+const {pool} = require("../libs/postgres.pool.js")
 
 
 class CategoriesService {
   constructor() {
     this.categories = [];
+    this.modelName = CategoryModel.modelName;
+    this.pool = pool;
+    this.pool.on("error", (err) => console.log(err));
     this.setUp();
   }
 
   setUp() {
-    this.categories = categories;
+    this.getCategories()
+      .then(categories => this.categories = categories)
+      .catch(err => console.log(err));
+  }
+
+  async generate() {
+    const generatedCategories = generateCategories({limit:5});
+
+    return await saveItemsIntoDB({
+      data: generatedCategories,
+      tableName: this.modelName,
+    });
   }
 
   async getCategories() {
-    return this.categories;
+    const query = `SELECT * FROM ${this.modelName}`;
+    const response = await pool.query(query);
+    return response.rows.map(category => new CategoryModel(category));
   }
 
   async findById({id}) {
-    const searchedCategory = this.categories.find(category => category.id === id)
+    const query = `SELECT * FROM ${this.modelName} WHERE ID=$1`;
+    const searchedCategory = await this.pool.query(query, [id]);
 
     if (!searchedCategory) {
       throw boom.notFound(`Category with id = ${id} not found`);
     }
 
-    return searchedCategory;
+    return new CategoryModel(searchedCategory.rows[0]);
   }
 
   async getCategoryInProduct({categoryId, productId, products}) {
