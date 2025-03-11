@@ -20,14 +20,29 @@ class ProductsService {
 
   async generate({categories}) {
     const generatedProducts = generateProducts({
-      limit:5,
+      limit: 5,
       categories: categories
     });
 
-    return await saveItemsIntoDB({
-      data: generatedProducts,
-      tableName: CategoryModel.modelName,
-    });
+    generatedProducts.map(async (product) => {
+      const productCategories = [...product.categories];
+
+      delete product.categories;
+
+      await saveItemsIntoDB({
+        tableName: "products",
+        data: [product],
+        keepOldData: true
+      })
+
+      await Promise.all(productCategories.map(async (categoryId) => {
+        await saveItemsIntoDB({
+          tableName: "product_categories",
+          data: [{product_id:product.id, category_id:categoryId}],
+          keepOldData: true
+        })
+      }))
+    })
   }
 
   _findProductIndex({id}) {
@@ -40,8 +55,19 @@ class ProductsService {
 
   async getProducts() {
     const query = "SELECT * FROM products";
-    const response = await this.pool.query(query);
-    return response.rows.map(product => new ProductModel(product));
+    const products = await this.pool.query(query);
+
+    const response = Promise.all(products.rows.map(async (product) => {
+      const query = `SELECT category_id FROM product_categories WHERE product_id = $1`;
+      const categories = await this.pool.query(query, [product.id]);
+
+      return new ProductModel({
+        ...product,
+        categories: categories.rows
+      });
+    }));
+
+    return response;
   }
 
   async findProductById({id}) {
