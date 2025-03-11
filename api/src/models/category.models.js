@@ -2,6 +2,7 @@ const joi = require("joi");
 const boom = require('@hapi/boom');
 
 class CategoryModel {
+  static modelName = 'categories';
 
   static schema = joi.object({
     id: joi.string().required(),
