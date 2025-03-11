@@ -3,6 +3,8 @@ const boom = require('@hapi/boom')
 
 class ProductModel {
 
+  static modelName = 'products';
+
   static schema = joi.object({
     id: joi.string().required(),
     name: joi.string().required(),
