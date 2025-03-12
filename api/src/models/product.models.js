@@ -1,5 +1,6 @@
 const joi = require("joi");
 const boom = require('@hapi/boom')
+const {CategoryModel} = require("./category.models");
 
 class ProductModel {
 
@@ -10,7 +11,7 @@ class ProductModel {
     name: joi.string().required(),
     price: joi.number().positive().required(),
     currency: joi.string().length(3).uppercase().required(),
-    categories: joi.array().items(joi.string()).min(1).required(),
+    categories: joi.array().items(CategoryModel.schema).min(1).required(),
     description: joi.string().required(),
     image: joi.string().uri().required(),
   });
