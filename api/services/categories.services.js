@@ -31,6 +31,11 @@ class CategoriesService {
   async getCategories() {
     const query = `SELECT * FROM ${this.modelName}`;
     const response = await pool.query(query);
+
+    if (!response) {
+      throw boom.notFound("No categories found");
+    }
+
     return response.rows.map(category => new CategoryModel(category));
   }
 
