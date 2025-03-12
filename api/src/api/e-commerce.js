@@ -44,7 +44,7 @@ async function saveItemsIntoDB({tableName, data, keepOldData = false}) {
     await pool.query(query, values);
   }))
 
-  return await pool.query(`SELECT * FROM ${tableName}`);
+  return data;
 }
 
 const categories = generateCategories({limit: 5});
