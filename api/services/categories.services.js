@@ -43,7 +43,7 @@ class CategoriesService {
     const query = `SELECT * FROM ${this.modelName} WHERE ID=$1`;
     const searchedCategory = await this.pool.query(query, [id]);
 
-    if (!searchedCategory) {
+    if (!searchedCategory.rows[0]) {
       throw boom.notFound(`Category with id = ${id} not found`);
     }
 
