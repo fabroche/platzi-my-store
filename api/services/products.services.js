@@ -30,7 +30,7 @@ class ProductsService {
       delete product.categories;
 
       await saveItemsIntoDB({
-        tableName: "products",
+        tableName: this.modelName,
         data: [product],
         keepOldData: true
       })
@@ -58,12 +58,20 @@ class ProductsService {
     const products = await this.pool.query(query);
 
     const response = Promise.all(products.rows.map(async (product) => {
-      const query = `SELECT category_id FROM product_categories WHERE product_id = $1`;
-      const categories = await this.pool.query(query, [product.id]);
+      const categoryModelName = CategoryModel.modelName
+      const query = `SELECT ${categoryModelName}.*
+                     FROM ${categoryModelName} ${categoryModelName}
+                            JOIN product_categories pc
+                                 ON categories.id = pc.category_id
+                     WHERE pc.product_id = $1`;
+
+      const result = await this.pool.query(query, [product.id]);
+
+      const categories = result.rows.map(category => new CategoryModel(category));
 
       return new ProductModel({
         ...product,
-        categories: categories.rows
+        categories: categories
       });
     }));
 
