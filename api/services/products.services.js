@@ -56,6 +56,8 @@ class ProductsService {
         })
       }))
     })
+
+    return await this.getProducts();
   }
 
   _findProductIndex({id}) {
