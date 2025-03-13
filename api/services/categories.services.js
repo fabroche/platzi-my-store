@@ -20,16 +20,25 @@ class CategoriesService {
   }
 
   async generate() {
+    try {
+
     const generatedCategories = generateCategories({limit:5});
 
-    return await saveItemsIntoDB({
+    await saveItemsIntoDB({
       data: generatedCategories,
       tableName: this.modelName,
     });
+
+    return await this.getCategories()
+
+    } catch (error) {
+      throw boom.badData(error.message);
+    }
+
   }
 
   async getCategories() {
-    const query = `SELECT * FROM ${this.modelName}`;
+    const query = `SELECT * FROM ${this.modelName} ORDER BY id;`;
     const response = await pool.query(query);
 
     if (!response) {
