@@ -1,9 +1,11 @@
 const {Router} = require('express');
 const {handlePagination} = require("../src/utils/utils");
 const {ProductsService} = require('../services/products.services.js');
+const {CategoriesService} = require("../services/categories.services");
 
 const productsRouter = Router();
 const productService = new ProductsService();
+const categoriesService = new CategoriesService();
 
 
 productsRouter.get('/', async (req, res, next) => {
@@ -25,15 +27,32 @@ productsRouter.get('/', async (req, res, next) => {
 
     if (!result?.length) {
       res.status(404).send('No se encontraron productos');
+    } else {
+      res.status(200).json([
+        ...result
+      ]);
     }
 
-    res.status(200).json([
-      ...result
-    ]);
+
   } catch (error) {
     next(error);
   }
 
+})
+
+productsRouter.get('/generate', async (req, res, next) => {
+  try {
+    const categories = await categoriesService.getCategories();
+
+    const result = await productService.generate({
+      categories: categories
+    })
+
+    res.status(200).json(result);
+
+  } catch (error) {
+    next(error);
+  }
 })
 
 productsRouter.get('/:id', async (req, res, next) => {
