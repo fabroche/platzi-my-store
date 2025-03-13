@@ -7,18 +7,20 @@ const {ENV} = require('../config.js');
   const URI = `postgres://${DB_USER}:${DB_PASSWORD}@${ENV.POSTGRES_HOST}:${ENV.POSTGRES_PORT}/${ENV.POSTGRES_DB}`;
   const SUPABASE_URI = ENV.SUPABASE_DB;
 
-  let ssl = null;
-
-  if (process.env.CA_CERT) {
-    ssl = {
-      rejectUnauthorized: true,
-      ca: process.env.CA_CERT,
-    }
-  }
+  // let ssl = null;
+  //
+  // if (process.env.CA_CERT) {
+  //   ssl = {
+  //     rejectUnauthorized: true,
+  //     ca: process.env.CA_CERT,
+  //   }
+  // }
 
   const pool = new Pool({
     connectionString: process.env.SUPABASE_DB_POSTGRES_URL || ENV.SUPABASE_DB,
-    ssl: ssl,
+    ssl: {
+      rejectUnauthorized: false,
+    },
   });
 
 module.exports = {
