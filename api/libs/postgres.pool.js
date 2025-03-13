@@ -17,7 +17,7 @@ const {ENV} = require('../config.js');
   // }
 
   const pool = new Pool({
-    connectionString: process.env.SUPABASE_DB_POSTGRES_URL || ENV.SUPABASE_DB,
+    connectionString: process.env.SUPABASE_DB || ENV.SUPABASE_DB,
     ssl: {
       rejectUnauthorized: false,
     },
