@@ -72,7 +72,7 @@ class ProductsService {
 
     const response = Promise.all(products.rows.map(async (product) => {
 
-      const categories = this.getProductCategories({
+      const categories = await this.getProductCategories({
         productId: product.id
       });
 
