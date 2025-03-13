@@ -7,7 +7,9 @@ const {ENV} = require('../config.js');
   const URI = `postgres://${DB_USER}:${DB_PASSWORD}@${ENV.POSTGRES_HOST}:${ENV.POSTGRES_PORT}/${ENV.POSTGRES_DB}`;
   const SUPABASE_URI = ENV.SUPABASE_DB;
 
-  const pool = new Pool({connectionString: process.env.SUPABASE_DB || ENV.SUPABASE_DB});
+  const pool = new Pool({
+    connectionString: process.env.SUPABASE_DB_POSTGRES_URL || ENV.SUPABASE_DB
+  });
 
 module.exports = {
   pool
