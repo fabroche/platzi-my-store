@@ -10,7 +10,7 @@ const productsService = new ProductsService();
 
 categoriesRouter.get('/', async (req, res, next) => {
   try {
-    const categories =  await categoriesService.getCategories();
+    const categories = await categoriesService.getCategories();
 
     const {limit = categories.length, offset = 0} = req.query;
 
@@ -22,13 +22,26 @@ categoriesRouter.get('/', async (req, res, next) => {
 
     if (!result?.length) {
       res.status(404).send('No se encontraron Categorias');
+    } else {
+      res.status(200).json([
+        ...result
+      ]);
     }
 
-    res.status(200).json([
-      ...result
-    ]);
   } catch (error) {
     next(error);
+  }
+})
+
+categoriesRouter.get('/generate', async (req, res, next) => {
+  try {
+
+    const result = await categoriesService.generate();
+
+    res.status(200).json(result)
+
+  } catch (err) {
+    next(err);
   }
 })
 
