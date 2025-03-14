@@ -33,7 +33,7 @@ class ProductsService {
 
   async generate({categories}) {
     const generatedProducts = generateProducts({
-      limit: 5,
+      limit: 100,
       categories: categories
     });
 
