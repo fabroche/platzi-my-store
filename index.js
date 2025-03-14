@@ -25,7 +25,7 @@ const options = {
 app.use(cors(options));
 
 app.get('/', (req, res) => {
-  res.send("Express on Vercel")
+  res.send("Genzai with Express on Vercel")
 })
 
 routerApi(app);
