@@ -1,6 +1,9 @@
 const path = require("path");
 
-const ENVDIR = path.join(__dirname, "..", '.env.local');
+const ENVDIR = process.env.NODE_ENV
+  ? path.join(__dirname, "..", '.env')
+  : path.join(__dirname, "..", '.env.local')
+
 process.loadEnvFile(ENVDIR);
 const ENV = process.env;
 
