@@ -1,4 +1,4 @@
-const {ENV} = require('./api/config.js');
+const {ENV,config} = require('./api/config.js');
 
 const express = require('express');
 const {routerApi} = require('./api/routes');
@@ -12,7 +12,9 @@ const cors = require("cors");
 const app = express();
 const port = ENV.PORT || 3000;
 app.use(express.json());
+
 const whitelist = ENV.CORS_WHITE_LIST.split(',');
+
 const options = {
   origin: (origin, callback) => {
     if (whitelist.includes(origin) || !origin) {
