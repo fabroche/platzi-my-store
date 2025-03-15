@@ -1,6 +1,6 @@
 const path = require("path");
 
-const ENVDIR = path.join(__dirname, "..", '.env');
+const ENVDIR = path.join(__dirname, "..", '.env.local');
 process.loadEnvFile(ENVDIR);
 const ENV = process.env;
 
@@ -18,15 +18,15 @@ function setupSSL() {
     };
   } else {
     ssl = {
-      rejectUnauthorized: true
+      rejectUnauthorized: false
     }
   }
   return ssl;
 }
 
 const config = {
-  env: ENV.NODE_ENV || "development",
-  port: ENV.PORT || 3000,
+  env: process.env.NODE_ENV || ENV.NODE_ENV || "development",
+  port: process.env.PORT || ENV.PORT || 3000,
   db: {
     engine: process.env.DB_ENGINE || ENV.DB_ENGINE,
     user: encodeURIComponent(process.env.DB_USER) || encodeURIComponent(ENV.DB_USER),
@@ -38,7 +38,7 @@ const config = {
   },
 }
 
-config.db.connectionString = `${config.db.engine}://${config.db.user}:${config.db.password}@${config.db.host}:${config.db.port}/${config.db.database}`;
+config.db.connectionString = process.env.SUPABASE_VERCEL_URI || `${config.db.engine}://${config.db.user}:${config.db.password}@${config.db.host}:${config.db.port}/${config.db.database}`;
 
 module.exports = {
   ENV,
