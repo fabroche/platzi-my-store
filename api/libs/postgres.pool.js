@@ -1,12 +1,19 @@
 const {Pool} = require('pg');
-const {ENV} = require('../config.js');
+const {config} = require('../config.js');
 
-  const pool = new Pool({
-    connectionString: process.env.SUPABASE_VERCEL_URI || ENV.SUPABASE_VERCEL_URI,
-    ssl: {
-      rejectUnauthorized: false,
+  const options = {
+    development: {
+      connectionString: process.env.SUPABASE_VERCEL_URI || config.db.connectionString,
     },
-  });
+    production: {
+      connectionString: process.env.SUPABASE_VERCEL_URI || config.db.connectionString,
+      ssl: {
+        rejectUnauthorized: false,
+      }
+    }
+  }
+
+  const pool = new Pool(options[config.env]);
 
 module.exports = {
   pool
