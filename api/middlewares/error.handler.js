@@ -31,7 +31,7 @@ function ormErrorHandlerMiddleware(err, req, res, next) {
     next(err);
   }
 
-  res.status(500).json({
+  res.status(409).json({
     message: err.name,
     errors: err.errors,
   });
