@@ -8,16 +8,4 @@ const sequelize = new Sequelize(config.db.connectionString, {
 
 setUpModels(sequelize);
 
-sequelize.sync()
-  .then(() => {
-    console.group('Sequelize Sync')
-    console.log('Successfully Sync Models')
-    console.groupEnd()
-  })
-  .catch(err => {
-    console.group('Sequelize Sync')
-    console.error(err)
-    console.groupEnd()
-  });
-
 module.exports = {sequelize};
