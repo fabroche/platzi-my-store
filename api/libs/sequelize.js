@@ -3,7 +3,7 @@ const {config} = require('../config');
 const {setUpModels} = require('../../db/models');
 
 const sequelize = new Sequelize(config.db.connectionString, {
-  dialect: 'postgres',
+  dialect: config.db.engine,
 });
 
 setUpModels(sequelize);
