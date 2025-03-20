@@ -18,6 +18,11 @@ const UserSchema = {
     type: DataTypes.STRING,
     allowNull: false
   },
+  role: {
+    allowNull: false,
+    type: DataTypes.STRING,
+    defaultValue: 'customer'
+  },
   createdAt: {
     type: DataTypes.DATE,
     allowNull: false,
