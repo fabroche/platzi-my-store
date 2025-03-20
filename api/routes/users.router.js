@@ -5,26 +5,31 @@ const {UserService} = require("../services/user.service")
 const usersRouter = Router();
 const userService = new UserService();
 
-usersRouter.get('/', async (req, res) => {
-  const userService = new UserService();
+usersRouter.get('/', async (req, res, next) => {
+  try {
 
-  const users = await userService.find();
+    const userService = new UserService();
 
-  const {limit = users.length, offset = 0} = req.query;
+    const users = await userService.find();
 
-  const result = handlePagination({
-    limit,
-    offset,
-    itemList: users
-  });
+    const {limit = users.length, offset = 0} = req.query;
 
-  if (!result?.length) {
-    res.status(404).send('No se encontraron usuarios');
+    const result = handlePagination({
+      limit,
+      offset,
+      itemList: users
+    });
+
+    if (!result?.length) {
+      res.status(404).send('No se encontraron usuarios');
+    }
+
+    res.status(200).json([
+      ...result
+    ]);
+  } catch (error) {
+    next(error);
   }
-
-  res.status(200).json([
-    ...result
-  ]);
 })
 
 usersRouter.get('/:id', async (req, res, next) => {
