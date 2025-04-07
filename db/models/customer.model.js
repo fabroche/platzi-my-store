@@ -42,3 +42,24 @@ const CustomerSchema = {
   onUpdate: 'CASCADA',
   onDelete: 'SET NULL',
 }
+
+class Customer extends Model {
+  static associate() {
+
+  }
+
+  static config(sequelize) {
+    return {
+      sequelize,
+      tableName: CUSTOMER_TABLE,
+      modelName: 'Customer',
+      timestamps: false,
+    }
+  }
+}
+
+module.exports = {
+  Customer,
+  CUSTOMER_TABLE,
+  CustomerSchema
+}
