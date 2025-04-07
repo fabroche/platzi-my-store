@@ -1,24 +1,36 @@
 const Joi = require('joi');
+const {generateKeyMap} = require('../utils/utils');
 
-const id = Joi.number().integer();
-const email = Joi.string().email();
-const password = Joi.string().min(8);
-const role = Joi.string().min(5);
+const userAttrSchema = Joi.object({
+  id: Joi.number().integer(),
+  email: Joi.string().email(),
+  password: Joi.string().min(8),
+  role: Joi.string().min(5),
+})
+
+const userAttrTypes = generateKeyMap(userAttrSchema);
+
 
 const createUserSchema = Joi.object({
-  email: email.required(),
-  password: password.required(),
-  role: role.required()
+  email: userAttrSchema.extract(userAttrTypes.id).required(),
+  password: userAttrSchema.extract(userAttrTypes.password).required(),
+  role: userAttrSchema.extract(userAttrTypes.role).required()
 });
 
 const updateUserSchema = Joi.object({
-  email: email,
-  role: role,
-  password: password
+  email: userAttrSchema.extract(userAttrTypes.email),
+  role: userAttrSchema.extract(userAttrTypes.role),
+  password: userAttrSchema.extract(userAttrTypes.password),
 });
 
 const getUserSchema = Joi.object({
-  id: id.required(),
+  id: userAttrSchema.extract(userAttrTypes.id).required(),
 });
 
-module.exports = { createUserSchema, updateUserSchema, getUserSchema }
+module.exports = {
+  createUserSchema,
+  updateUserSchema,
+  getUserSchema,
+  userAttrSchema,
+  userAttrTypes
+}
