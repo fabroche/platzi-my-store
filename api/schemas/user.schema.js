@@ -8,7 +8,7 @@ const userAttrSchema = Joi.object({
   role: Joi.string().min(5),
 })
 
-const userAttrTypes = generateKeyMap(userAttrSchema);
+const userAttrTypes = generateKeyMap(userAttrSchema.describe().keys);
 
 
 const createUserSchema = Joi.object({
