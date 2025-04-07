@@ -2,8 +2,11 @@ const {handlePagination} = require("../src/utils/utils");
 const {Router} = require("express");
 const {UserService} = require("../services/user.service")
 
+const {validatorHandler} = require("../middlewares/validator.handler");
+const {getUserSchema, createUserSchema} = require("../schemas/user.schema");
 const usersRouter = Router();
 const userService = new UserService();
+
 
 usersRouter.get('/', async (req, res, next) => {
   try {
@@ -32,38 +35,46 @@ usersRouter.get('/', async (req, res, next) => {
   }
 })
 
-usersRouter.get('/:id', async (req, res, next) => {
-  try {
-    const {id} = req.params;
-    const result = await userService.findOne(id)
+usersRouter.get('/:id',
+  validatorHandler(getUserSchema, 'params'),
+  async (req, res, next) => {
+    try {
+      const {id} = req.params;
+      const result = await userService.findOne(id)
 
-    res.json({
-      ...result
-    });
-  } catch (error) {
-    next(error);
-  }
-})
-
-usersRouter.post('/', async (req, res, next) => {
-  try {
-    const body = req.body;
-
-    const newUser = await userService.create(body)
-
-    if (newUser) {
-      res.status(201).json({
-        message: `User ${newUser.email} created`,
-        data: newUser,
-        id: newUser.id
+      res.json({
+        ...result
       });
+    } catch (error) {
+      next(error);
     }
-  } catch (error) {
-    next(error);
-  }
-})
+  })
 
-usersRouter.patch('/:id', async (req, res, next) => {
+usersRouter.post(
+  '/',
+  validatorHandler(createUserSchema, 'body'),
+  async (req, res, next) => {
+    try {
+      const body = req.body;
+
+      const newUser = await userService.create(body)
+
+      if (newUser) {
+        res.status(201).json({
+          message: `User ${newUser.email} created`,
+          data: newUser,
+          id: newUser.id
+        });
+      }
+    } catch (error) {
+      next(error);
+    }
+  })
+
+usersRouter.patch(
+  '/:id',
+  validatorHandler(createUserSchema, 'body'),
+  async (req, res, next) => {
 
   try {
 
@@ -82,7 +93,10 @@ usersRouter.patch('/:id', async (req, res, next) => {
 
 })
 
-usersRouter.delete('/:id', async (req, res, next) => {
+usersRouter.delete(
+  '/:id',
+  validatorHandler(getUserSchema, 'params'),
+  async (req, res, next) => {
   try {
 
     const {id} = req.params;
