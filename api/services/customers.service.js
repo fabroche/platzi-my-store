@@ -1,12 +1,15 @@
 const boom = require('@hapi/boom');
-const {models} = require('../libs/sequelize');
+const {sequelize: {models}} = require('../libs/sequelize');
 
 class CustomersService {
   constructor() {}
 
   async find() {
-    const rta = await models.Customer.findAll();
-    return rta;
+    const customers = await models.Customer.findAll();
+    if (!customers?.length) {
+      throw boom.notFound('There is not any Customer');
+    }
+    return customers;
   }
 
   async findOne(id) {
@@ -35,3 +38,5 @@ class CustomersService {
   }
 
 }
+
+module.exports = {CustomersService};
