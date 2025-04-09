@@ -1,36 +1,36 @@
 const Joi = require('joi');
 const {generateKeyMap} = require('../utils/utils');
 
-const userAttrSchema = Joi.object({
+const userValidationSchema = Joi.object({
   id: Joi.number().integer(),
   email: Joi.string().email(),
   password: Joi.string().min(8),
   role: Joi.string().min(5),
 })
 
-const userAttrTypes = generateKeyMap(userAttrSchema.describe().keys);
+const userAttrTypes = generateKeyMap(userValidationSchema.describe().keys);
 
 
 const createUserSchema = Joi.object({
-  email: userAttrSchema.extract(userAttrTypes.id).required(),
-  password: userAttrSchema.extract(userAttrTypes.password).required(),
-  role: userAttrSchema.extract(userAttrTypes.role).required()
+  email: userValidationSchema.extract(userAttrTypes.id).required(),
+  password: userValidationSchema.extract(userAttrTypes.password).required(),
+  role: userValidationSchema.extract(userAttrTypes.role).required()
 });
 
 const updateUserSchema = Joi.object({
-  email: userAttrSchema.extract(userAttrTypes.email),
-  role: userAttrSchema.extract(userAttrTypes.role),
-  password: userAttrSchema.extract(userAttrTypes.password),
+  email: userValidationSchema.extract(userAttrTypes.email),
+  role: userValidationSchema.extract(userAttrTypes.role),
+  password: userValidationSchema.extract(userAttrTypes.password),
 });
 
 const getUserSchema = Joi.object({
-  id: userAttrSchema.extract(userAttrTypes.id).required(),
+  id: userValidationSchema.extract(userAttrTypes.id).required(),
 });
 
 module.exports = {
   createUserSchema,
   updateUserSchema,
   getUserSchema,
-  userAttrSchema,
+  userValidationSchema,
   userAttrTypes
 }
