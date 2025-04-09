@@ -17,6 +17,7 @@ class CustomersService {
     if (!customer) {
       throw boom.notFound('Customer not found');
     }
+    return customer;
   }
 
   async update(id, changes) {
@@ -26,7 +27,8 @@ class CustomersService {
   }
 
   async create(data) {
-    return data;
+    const newCustomer = await models.Customer.create(data);
+    return newCustomer;
   }
 
   async delete(id) {
