@@ -1,43 +1,40 @@
 const Joi = require('joi');
-const {userAttrSchema, userAttrTypes} = require('../schemas/user.schema');
+const {userValidationSchema, userAttrTypes} = require('../schemas/user.schema');
 const {generateKeyMap} = require("../utils/utils");
 
 
-const customerSchema = Joi.object({
+const customerValidationSchema = Joi.object({
   id: Joi.number().integer(),
   name: Joi.string().min(3).max(30),
   lastName: Joi.string(),
   phone: Joi.string(),
-  userId: userAttrSchema.extract(userAttrTypes.id)
+  userId: userValidationSchema.extract(userAttrTypes.id)
 })
 
-const customerAttrTypes = generateKeyMap(customerSchema.describe().keys);
+const customerAttrTypes = generateKeyMap(customerValidationSchema.describe().keys);
 
 const getCustomerSchema = Joi.object({
-  id: customerSchema.extract(customerAttrTypes.id).required()
+  id: customerValidationSchema.extract(customerAttrTypes.id).required()
 })
 
 const createCustomerSchema = Joi.object({
-  name: customerSchema.extract(customerAttrTypes.name).required(),
-  lastName: customerSchema.extract(customerAttrTypes.lastName).required(),
-  phone: customerSchema.extract(customerAttrTypes.phone).required(),
-  user: Joi.object({
-    email: userAttrSchema.extract(userAttrTypes.email).required(),
-    password: userAttrSchema.extract(userAttrTypes.password).required(),
-  })
+  name: customerValidationSchema.extract(customerAttrTypes.name).required(),
+  lastName: customerValidationSchema.extract(customerAttrTypes.lastName).required(),
+  phone: customerValidationSchema.extract(customerAttrTypes.phone).required(),
+  userId: userValidationSchema.extract(userAttrTypes.id).required()
 })
 
 const updateCustomerSchema = Joi.object({
-  name: customerSchema.extract(customerAttrTypes.name),
-  lastName: customerSchema.extract(customerAttrTypes.lastName),
-  phone: customerSchema.extract(customerAttrTypes.phone),
-  userId: customerSchema.extract(customerAttrTypes.userId),
+  name: customerValidationSchema.extract(customerAttrTypes.name),
+  lastName: customerValidationSchema.extract(customerAttrTypes.lastName),
+  phone: customerValidationSchema.extract(customerAttrTypes.phone),
+  userId: customerValidationSchema.extract(customerAttrTypes.userId),
 })
 
 module.exports = {
   getCustomerSchema,
   createCustomerSchema,
   updateCustomerSchema,
-  customerSchema,
+  customerValidationSchema,
   customerAttrTypes
 }
