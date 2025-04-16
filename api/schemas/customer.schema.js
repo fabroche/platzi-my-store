@@ -8,7 +8,11 @@ const customerValidationSchema = Joi.object({
   name: Joi.string().min(3).max(30),
   lastName: Joi.string(),
   phone: Joi.string(),
-  userId: userValidationSchema.extract(userAttrTypes.id)
+  user: Joi.object({
+    email: userValidationSchema.extract(userAttrTypes.email),
+    password: userValidationSchema.extract(userAttrTypes.password),
+  }),
+  userId: userValidationSchema.extract(userAttrTypes.id),
 })
 
 const customerAttrTypes = generateKeyMap(customerValidationSchema.describe().keys);
@@ -21,7 +25,10 @@ const createCustomerSchema = Joi.object({
   name: customerValidationSchema.extract(customerAttrTypes.name).required(),
   lastName: customerValidationSchema.extract(customerAttrTypes.lastName).required(),
   phone: customerValidationSchema.extract(customerAttrTypes.phone).required(),
-  userId: userValidationSchema.extract(userAttrTypes.id).required()
+  user: Joi.object({
+    email: userValidationSchema.extract(userAttrTypes.email).required(),
+    password: userValidationSchema.extract(userAttrTypes.password).required(),
+  })
 })
 
 const updateCustomerSchema = Joi.object({
