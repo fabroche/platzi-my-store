@@ -12,7 +12,7 @@ const userAttrTypes = generateKeyMap(userValidationSchema.describe().keys);
 
 
 const createUserSchema = Joi.object({
-  email: userValidationSchema.extract(userAttrTypes.id).required(),
+  email: userValidationSchema.extract(userAttrTypes.email).required(),
   password: userValidationSchema.extract(userAttrTypes.password).required(),
   role: userValidationSchema.extract(userAttrTypes.role).required()
 });
