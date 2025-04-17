@@ -14,7 +14,6 @@ module.exports = {
         throw error;
       }
     }
-
   },
 
   async down(queryInterface, Sequelize) {
