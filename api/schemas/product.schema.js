@@ -26,6 +26,7 @@ const createProductSchema = Joi.object({
     name: categoryValidationSchema.extract(categoryAttrTypes.name),
     image: categoryValidationSchema.extract(categoryAttrTypes.image),
   }),
+  categoryId: categoryValidationSchema.extract(categoryAttrTypes.id)
 });
 
 const updateProductSchema = Joi.object({
