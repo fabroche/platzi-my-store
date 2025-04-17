@@ -2,7 +2,6 @@ const boom = require('@hapi/boom');
 
 const {sequelize: {models}} = require('../libs/sequelize');
 const {UserModel} = require('../src/models/user.model');
-const {values} = require("pg/lib/native/query");
 
 
 class UserService {
