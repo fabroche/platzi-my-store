@@ -63,6 +63,14 @@ class CategoryService {
       rta: true
     }
   }
+
+  async getProductsWithCategoryID(id) {
+    const categories = await models.Category.findByPk(id, {
+      include: ['products']
+    })
+
+    return categories.products;
+  }
 }
 
 module.exports = {CategoryService};
