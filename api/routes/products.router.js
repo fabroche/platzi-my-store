@@ -1,17 +1,21 @@
 const {Router} = require('express');
 const {handlePagination} = require("../src/utils/utils");
-const {ProductsService} = require('../services/products.services.js');
-const {CategoriesService} = require("../services/categories.services");
+const {ProductsService} = require('../services/products.service');
+const {validatorHandler} = require("../middlewares/validator.handler");
+const {
+  createProductSchema,
+  updateProductSchema,
+  getProductSchema
+} = require("../schemas/product.schema");
 
 const productsRouter = Router();
 const productService = new ProductsService();
-const categoriesService = new CategoriesService();
 
 
 productsRouter.get('/', async (req, res, next) => {
   try {
 
-    const products = await productService.getProducts();
+    const products = await productService.find();
 
     const {limit = products.length, offset = 0} = req.query;
 
@@ -32,8 +36,6 @@ productsRouter.get('/', async (req, res, next) => {
         ...result
       ]);
     }
-
-
   } catch (error) {
     next(error);
   }
@@ -58,7 +60,7 @@ productsRouter.get('/generate', async (req, res, next) => {
 productsRouter.get('/:id', async (req, res, next) => {
   try {
     const {id} = req.params;
-    const result = await productService.findProductById({id});
+    const result = await productService.findOne(id);
 
     res.json({
       ...result
@@ -68,51 +70,52 @@ productsRouter.get('/:id', async (req, res, next) => {
   }
 })
 
-productsRouter.post('/', async (req, res, next) => {
-  try {
-    const body = req.body;
+productsRouter.post('/',
+  validatorHandler(createProductSchema, 'body'),
+  async (req, res, next) => {
+    try {
+      const body = req.body;
 
-    const newProduct = await productService.createProduct({
-      product: body
-    });
+      const newProduct = await productService.create(body);
 
-    if (newProduct) {
-      res.status(201).json({
-        message: `Producto ${newProduct.name} created`,
-        data: newProduct,
-        id: newProduct.id
-      });
+      if (newProduct) {
+        res.status(201).json({
+          message: `Producto ${newProduct.name} created`,
+          data: newProduct,
+        });
+      }
+    } catch (error) {
+      next(error);
     }
-  } catch (error) {
-    next(error);
-  }
-})
+  })
 
-productsRouter.put('/:id', async (req, res, next) => {
-  try {
+productsRouter.put('/:id',
+  validatorHandler(getProductSchema, 'params'),
+  validatorHandler(updateProductSchema, 'body'),
+  async (req, res, next) => {
+    try {
 
-    const {id} = req.params;
-    const body = req.body;
+      const {id} = req.params;
+      const body = req.body;
 
-    const newProduct = await productService.update({
-      id,
-      product: body
-    });
+      const newProduct = await productService.update(id,body);
 
-    if (newProduct) {
-      res.status(201).json({
-        message: `Producto ${newProduct.id} updated`,
-        data: newProduct,
-        id: newProduct.id
-      });
+      if (newProduct) {
+        res.status(201).json({
+          message: `Producto ${newProduct.id} updated`,
+          data: newProduct,
+        });
+      }
+    } catch (error) {
+      next(error);
     }
-  } catch (error) {
-    next(error);
-  }
 
-})
+  })
 
-productsRouter.patch('/:id', async (req, res, next) => {
+productsRouter.patch('/:id',
+  validatorHandler(getProductSchema, 'params'),
+  validatorHandler(updateProductSchema, 'body'),
+  async (req, res, next) => {
   try {
     const {id} = req.params;
     const body = req.body;
@@ -126,7 +129,6 @@ productsRouter.patch('/:id', async (req, res, next) => {
       res.status(201).json({
         message: `Producto ${newProduct.id} Partial updated`,
         data: body,
-        id: newProduct.id
       });
     }
   } catch (error) {
@@ -134,16 +136,17 @@ productsRouter.patch('/:id', async (req, res, next) => {
   }
 })
 
-productsRouter.delete('/:id', async (req, res, next) => {
+productsRouter.delete('/:id',
+  validatorHandler(getProductSchema, 'params'),
+  async (req, res, next) => {
   try {
     const {id} = req.params;
-    const deletedProduct = await productService.delete({id})
+    const deletedProduct = await productService.delete(id)
 
     if (deletedProduct) {
       res.status(200).json({
         message: `Producto ${deletedProduct.id} deleted`,
         data: deletedProduct,
-        id: deletedProduct.id
       })
     }
   } catch (error) {
