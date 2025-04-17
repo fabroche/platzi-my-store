@@ -8,7 +8,10 @@ module.exports = {
     try {
       await queryInterface.addColumn(USER_TABLE, 'role', UserSchema.role);
     } catch (error) {
-      if (error.message.includes(`column "role" of relation "${USER_TABLE}" already exists`)) {
+      const mysqlError = "Duplicate column name 'role'"
+      const postgresqlError = `column "role" of relation "${USER_TABLE}" already exists`
+
+      if (error.message.includes(postgresqlError) || error.message.includes(mysqlError)) {
         console.info(`La columna role ya existe en la tabla ${USER_TABLE}, continuando...`)
       } else {
         throw error;
