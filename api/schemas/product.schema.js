@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const {generateKeyMap} = require("../utils/utils");
-
+const {categoryValidationSchema, categoryAttrTypes} = require("../schemas/category.schema");
 
 const productValidationSchema = Joi.object({
   id: Joi.string().uuid(),
@@ -8,6 +8,11 @@ const productValidationSchema = Joi.object({
   price: Joi.number().integer().min(10),
   description: Joi.string().min(10),
   image: Joi.string().uri(),
+  category: Joi.object({
+    name: categoryValidationSchema.extract(categoryAttrTypes.name),
+    image: categoryValidationSchema.extract(categoryAttrTypes.image),
+  }),
+  categoryId: categoryValidationSchema.extract(categoryAttrTypes.id)
 })
 
 const productsAttrTypes = generateKeyMap(productValidationSchema.describe().keys);
@@ -17,13 +22,18 @@ const createProductSchema = Joi.object({
   price: productValidationSchema.extract(productsAttrTypes.price).required(),
   description: productValidationSchema.extract(productsAttrTypes.description).required(),
   image: productValidationSchema.extract(productsAttrTypes.image).required(),
+  category: Joi.object({
+    name: categoryValidationSchema.extract(categoryAttrTypes.name),
+    image: categoryValidationSchema.extract(categoryAttrTypes.image),
+  }),
 });
 
 const updateProductSchema = Joi.object({
   name: productValidationSchema.extract(productsAttrTypes.name),
   price: productValidationSchema.extract(productsAttrTypes.price),
   description: productValidationSchema.extract(productsAttrTypes.description),
-  image: productValidationSchema.extract(productsAttrTypes.image)
+  image: productValidationSchema.extract(productsAttrTypes.image),
+  categoryId: categoryValidationSchema.extract(categoryAttrTypes.id)
 });
 
 const getProductSchema = Joi.object({
