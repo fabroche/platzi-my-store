@@ -57,7 +57,9 @@ productsRouter.get('/generate', async (req, res, next) => {
   }
 })
 
-productsRouter.get('/:id', async (req, res, next) => {
+productsRouter.get('/:id',
+  validatorHandler(getProductSchema, 'params'),
+  async (req, res, next) => {
   try {
     const {id} = req.params;
     const result = await productService.findOne(id);
