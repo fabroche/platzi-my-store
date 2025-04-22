@@ -35,7 +35,9 @@ class OrderService {
   }
 
   async findOne(id) {
-    const order = await models.Order.findByPk(id)
+    const order = await models.Order.findByPk(id,{
+      include: ['customer']
+    })
 
     if (!order) {
       throw boom.notFound('Category not found');
