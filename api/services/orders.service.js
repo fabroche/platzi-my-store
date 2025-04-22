@@ -29,7 +29,7 @@ class OrderService {
     const orders = await models.Order.findAll();
 
     if (!orders?.length) {
-      throw boom.notFound('There is not any Category');
+      throw boom.notFound('There is not any Order');
     }
     return orders;
   }
@@ -40,7 +40,7 @@ class OrderService {
     })
 
     if (!order) {
-      throw boom.notFound('Category not found');
+      throw boom.notFound('Order not found');
     }
 
     return order;
