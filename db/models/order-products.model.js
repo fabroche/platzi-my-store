@@ -7,26 +7,29 @@ const ORDER_PRODUCT_TABLE = 'orders_products';
 
 
 const OrderProductSchema = {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-    allowNull: false,
-  },
-  createdAt: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    field: 'created_at',
-    defaultValue: DataTypes.NOW,
-  },
-  orderId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    field: 'order_id',
-    unique: true,
-    references: {
-      model: ORDER_TABLE,
-      key: 'id',
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+      allowNull: false,
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      field: 'created_at',
+      defaultValue: DataTypes.NOW,
+    },
+    orderId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: 'order_id',
+      unique: true,
+      references: {
+        model: ORDER_TABLE,
+        key: 'id',
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
     },
     productId: {
       type: DataTypes.INTEGER,
@@ -36,16 +39,15 @@ const OrderProductSchema = {
       references: {
         model: PRODUCT_TABLE,
         key: 'id',
-      }
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
     },
     amount: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    onUpdate: 'CASCADE',
-    onDelete: 'CASCADE',
-  },
-}
+  }
 
 class OrderProduct extends Model {
   static associate(models) {
