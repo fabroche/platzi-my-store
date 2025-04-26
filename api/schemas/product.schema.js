@@ -3,7 +3,7 @@ const {generateKeyMap} = require("../utils/utils");
 const {categoryValidationSchema, categoryAttrTypes} = require("../schemas/category.schema");
 
 const productValidationSchema = Joi.object({
-  id: Joi.string().uuid(),
+  id: Joi.number().integer(),
   name: Joi.string().alphanum().min(3).max(15),
   price: Joi.number().integer().min(10),
   description: Joi.string().min(10),
