@@ -5,9 +5,11 @@ const {
   createOrderSchema,
   updateOrderSchema,
   getOrderSchema,
-  orderValidationSchema,
-  orderAttrTypes
 } = require('../schemas/order.schema');
+
+const {
+  addItemSchema
+} = require('../schemas/orderProduct.schema');
 
 const ordersRouter = express.Router();
 const ordersService = new OrderService();
@@ -20,12 +22,34 @@ ordersRouter.get('/', async (req, res, next) => {
   }
 })
 
+ordersRouter.get('/:id',
+  validatorHandler(getOrderSchema, 'params'),
+  async (req, res, next) => {
+  try {
+    const {id} = req.params;
+    res.json(await ordersService.findOne(id));
+  } catch (error) {
+    next(error);
+  }
+})
+
 ordersRouter.post('/',
   validatorHandler(createOrderSchema, 'body'),
   async (req, res, next) => {
     try {
       const body = req.body;
       res.status(201).json(await ordersService.create(body));
+    } catch (error) {
+      next(error);
+    }
+  });
+
+ordersRouter.post('/items',
+  validatorHandler(addItemSchema, 'body'),
+  async (req, res, next) => {
+    try {
+      const body = req.body;
+      res.status(201).json(await ordersService.addItem(body));
     } catch (error) {
       next(error);
     }
