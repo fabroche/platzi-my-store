@@ -26,7 +26,15 @@ class OrderService {
   }
 
   async find() {
-    const orders = await models.Order.findAll();
+    const orders = await models.Order.findAll({
+      include: [
+        {
+          association:'customer',
+          include: ['user']
+        },
+        'items'
+      ]
+    });
 
     if (!orders?.length) {
       throw boom.notFound('There is not any Order');
