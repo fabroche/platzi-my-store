@@ -23,7 +23,6 @@ const OrderProductSchema = {
       type: DataTypes.INTEGER,
       allowNull: false,
       field: 'order_id',
-      unique: true,
       references: {
         model: ORDER_TABLE,
         key: 'id',
@@ -35,7 +34,6 @@ const OrderProductSchema = {
       type: DataTypes.INTEGER,
       allowNull: false,
       field: 'product_id',
-      unique: true,
       references: {
         model: PRODUCT_TABLE,
         key: 'id',
