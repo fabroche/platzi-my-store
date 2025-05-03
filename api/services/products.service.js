@@ -1,4 +1,5 @@
 const {sequelize: {models}} = require('../libs/sequelize');
+const {Op} = require("sequelize");
 const {generateProducts, saveItemsIntoDB} = require("../src/api/e-commerce");
 const boom = require("@hapi/boom");
 const {setPagination, setFilters} = require("../utils/utils");
@@ -6,6 +7,17 @@ const {productsAttrTypes} = require("../schemas/product.schema");
 
 
 class ProductsService {
+
+  _setFilterPriceRange(query, options) {
+    if (query.price) {
+      throw boom.badRequest('when price filter is set you can not use range filter (price_min and price_max)');
+    }
+
+    options.where.price = {
+      [Op.gte]: query.price_min,
+      [Op.lte]: query.price_max
+    };
+  }
 
   async generate({categories}) {
     const generatedProducts = generateProducts({
@@ -50,6 +62,10 @@ class ProductsService {
       query,
       options
     );
+
+    if (query.price_min && query.price_max) {
+      this._setFilterPriceRange(query, options);
+    }
 
     const products = await models.Product.findAll(options);
 
