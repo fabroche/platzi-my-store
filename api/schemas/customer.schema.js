@@ -13,8 +13,6 @@ const customerValidationSchema = Joi.object({
     password: userValidationSchema.extract(userAttrTypes.password),
   }),
   userId: userValidationSchema.extract(userAttrTypes.id),
-  limit: Joi.number().integer(),
-  offset: Joi.number().integer(),
 })
 
 const customerAttrTypes = generateKeyMap(customerValidationSchema.describe().keys);
@@ -41,8 +39,8 @@ const updateCustomerSchema = Joi.object({
 })
 
 const queryCustomersSchema = Joi.object({
-  limit: customerValidationSchema.extract(customerAttrTypes.limit),
-  offset: customerValidationSchema.extract(customerAttrTypes.offset),
+  limit: Joi.number().integer(),
+  offset: Joi.number().integer(),
 });
 
 module.exports = {

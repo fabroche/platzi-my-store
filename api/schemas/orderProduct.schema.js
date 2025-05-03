@@ -9,8 +9,6 @@ const orderProductValidationSchema = Joi.object({
   orderId: orderValidationSchema.extract(orderAttrTypes.id),
   productId: productValidationSchema.extract(productsAttrTypes.id),
   amount: Joi.number().integer().min(1),
-  limit: Joi.number().integer(),
-  offset: Joi.number().integer(),
 })
 
 const orderProductAttrTypes = generateKeyMap(orderProductValidationSchema.describe().keys);
@@ -33,8 +31,8 @@ const getItemSchema = Joi.object({
 });
 
 const queryOrderProductsSchema = Joi.object({
-  limit: orderProductValidationSchema.extract(orderProductAttrTypes.limit),
-  offset: orderProductValidationSchema.extract(orderProductAttrTypes.offset),
+  limit: Joi.number().integer(),
+  offset: Joi.number().integer(),
 });
 
 module.exports = {

@@ -5,8 +5,6 @@ const categoryValidationSchema = Joi.object({
   id: Joi.number().integer(),
   name: Joi.string().min(3).max(15),
   image: Joi.string().uri(),
-  limit: Joi.number().integer(),
-  offset: Joi.number().integer(),
 })
 
 const categoryAttrTypes = generateKeyMap(categoryValidationSchema.describe().keys);
@@ -27,8 +25,8 @@ const getCategorySchema = Joi.object({
 });
 
 const queryCategoriesSchema = Joi.object({
-  limit: categoryValidationSchema.extract(categoryAttrTypes.limit),
-  offset: categoryValidationSchema.extract(categoryAttrTypes.offset),
+  limit: Joi.number().integer(),
+  offset: Joi.number().integer(),
 });
 
 module.exports = {

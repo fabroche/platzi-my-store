@@ -6,8 +6,6 @@ const userValidationSchema = Joi.object({
   email: Joi.string().email(),
   password: Joi.string().min(8),
   role: Joi.string().min(5),
-  limit: Joi.number().integer(),
-  offset: Joi.number().integer(),
 })
 
 const userAttrTypes = generateKeyMap(userValidationSchema.describe().keys);
@@ -30,8 +28,8 @@ const getUserSchema = Joi.object({
 });
 
 const queryUsersSchema = Joi.object({
-  limit: userValidationSchema.extract(userAttrTypes.limit),
-  offset: userValidationSchema.extract(userAttrTypes.offset),
+  limit: Joi.number().integer(),
+  offset: Joi.number().integer(),
 });
 
 module.exports = {
