@@ -2,6 +2,7 @@ const boom = require('@hapi/boom');
 
 const {sequelize: {models}} = require('../libs/sequelize');
 const {UserModel} = require('../src/models/user.model');
+const {setPagination} = require("../utils/utils");
 
 
 class UserService {
@@ -19,16 +20,21 @@ class UserService {
     return new UserModel(response.dataValues);
   }
 
-  async find() {
-    const rta = await models.User.findAll({
-      include: ['customer']
-    });
+  async find(query) {
 
-    if (!rta?.length) {
+    const options = {
+      include: ['customer']
+    }
+
+    setPagination(query, options);
+
+    const users = await models.User.findAll(options);
+
+    if (!users?.length) {
       throw boom.notFound("No se encontraron usuarios")
     }
 
-    return rta;
+    return users;
   }
 
   async findOne(id) {

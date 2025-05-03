@@ -3,37 +3,35 @@ const {Router} = require("express");
 const {UserService} = require("../services/user.service")
 
 const {validatorHandler} = require("../middlewares/validator.handler");
-const {getUserSchema, createUserSchema} = require("../schemas/user.schema");
+const {
+  getUserSchema,
+  createUserSchema,
+  queryUsersSchema
+} = require("../schemas/user.schema");
 const usersRouter = Router();
 const userService = new UserService();
 
 
-usersRouter.get('/', async (req, res, next) => {
-  try {
+usersRouter.get('/',
+  validatorHandler(queryUsersSchema, 'query'),
+  async (req, res, next) => {
+    try {
 
-    const userService = new UserService();
+      const userService = new UserService();
 
-    const users = await userService.find();
+      const users = await userService.find(req.query);
 
-    const {limit = users.length, offset = 0} = req.query;
-
-    const result = handlePagination({
-      limit,
-      offset,
-      itemList: users
-    });
-
-    if (!result?.length) {
-      res.status(404).send('No se encontraron usuarios');
+      if (!users?.length) {
+        res.status(404).send('No se encontraron usuarios');
+      } else {
+        res.status(200).json([
+          ...users
+        ]);
+      }
+    } catch (error) {
+      next(error);
     }
-
-    res.status(200).json([
-      ...result
-    ]);
-  } catch (error) {
-    next(error);
-  }
-})
+  })
 
 usersRouter.get('/:id',
   validatorHandler(getUserSchema, 'params'),
@@ -76,43 +74,43 @@ usersRouter.patch(
   validatorHandler(createUserSchema, 'body'),
   async (req, res, next) => {
 
-  try {
+    try {
 
-    const {id} = req.params;
-    const body = req.body;
+      const {id} = req.params;
+      const body = req.body;
 
-    const updatedUser = await userService.update(id, body);
+      const updatedUser = await userService.update(id, body);
 
-    res.status(200).json({
-      message: `User ${updatedUser.email} updated`,
-      data: updatedUser.changes
-    })
-  } catch (error) {
-    next(error);
-  }
+      res.status(200).json({
+        message: `User ${updatedUser.email} updated`,
+        data: updatedUser.changes
+      })
+    } catch (error) {
+      next(error);
+    }
 
-})
+  })
 
 usersRouter.delete(
   '/:id',
   validatorHandler(getUserSchema, 'params'),
   async (req, res, next) => {
-  try {
+    try {
 
-    const {id} = req.params;
+      const {id} = req.params;
 
-    const removedUser = await userService.delete(id);
+      const removedUser = await userService.delete(id);
 
-    res.status(200).json({
-      message: `User ${removedUser.email} deleted`,
-    })
+      res.status(200).json({
+        message: `User ${removedUser.email} deleted`,
+      })
 
-  } catch (e) {
-    next(e);
-  }
+    } catch (e) {
+      next(e);
+    }
 
 
-})
+  })
 
 module.exports = {
   usersRouter
