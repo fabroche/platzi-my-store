@@ -8,6 +8,16 @@ function generateKeyMap(obj) {
   }, {});
 }
 
+function setPagination(query, options) {
+  const {limit, offset} = query;
+
+  if (limit && offset) {
+    options.limit = limit;
+    options.offset = offset;
+  }
+}
+
 module.exports = {
   generateKeyMap,
+  setPagination
 }
