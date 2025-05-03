@@ -1,7 +1,8 @@
 const {sequelize: {models}} = require('../libs/sequelize');
 const {generateProducts, saveItemsIntoDB} = require("../src/api/e-commerce");
 const boom = require("@hapi/boom");
-const {setPagination} = require("../utils/utils");
+const {setPagination, setFilters} = require("../utils/utils");
+const {productsAttrTypes} = require("../schemas/product.schema");
 
 
 class ProductsService {
@@ -39,9 +40,16 @@ class ProductsService {
 
     const options = {
       include: ['category'],
+      where: {}
     }
 
     setPagination(query, options);
+
+    setFilters(
+      productsAttrTypes,
+      query,
+      options
+    );
 
     const products = await models.Product.findAll(options);
 
