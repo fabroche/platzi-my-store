@@ -1,6 +1,7 @@
 const {generateCategories, saveItemsIntoDB} = require("../src/api/e-commerce");
 const boom = require("@hapi/boom");
 const {sequelize: {models}} = require("../libs/sequelize");
+const {setPagination} = require("../utils/utils");
 
 class OrderService {
   constructor() {
@@ -25,8 +26,9 @@ class OrderService {
 
   }
 
-  async find() {
-    const orders = await models.Order.findAll({
+  async find(query) {
+
+    const options = {
       include: [
         {
           association:'customer',
@@ -34,7 +36,11 @@ class OrderService {
         },
         'items'
       ]
-    });
+    }
+
+    setPagination(query,options);
+
+    const orders = await models.Order.findAll(options);
 
     if (!orders?.length) {
       throw boom.notFound('There is not any Order');

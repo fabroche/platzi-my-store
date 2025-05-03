@@ -5,6 +5,7 @@ const {
   createOrderSchema,
   updateOrderSchema,
   getOrderSchema,
+  queryOrdersSchema
 } = require('../schemas/order.schema');
 
 const {
@@ -14,24 +15,26 @@ const {
 const ordersRouter = express.Router();
 const ordersService = new OrderService();
 
-ordersRouter.get('/', async (req, res, next) => {
-  try {
-    res.json(await ordersService.find());
-  } catch (error) {
-    next(error);
-  }
-})
+ordersRouter.get('/',
+  validatorHandler(queryOrdersSchema, 'query'),
+  async (req, res, next) => {
+    try {
+      res.json(await ordersService.find(req.query));
+    } catch (error) {
+      next(error);
+    }
+  })
 
 ordersRouter.get('/:id',
   validatorHandler(getOrderSchema, 'params'),
   async (req, res, next) => {
-  try {
-    const {id} = req.params;
-    res.json(await ordersService.findOne(id));
-  } catch (error) {
-    next(error);
-  }
-})
+    try {
+      const {id} = req.params;
+      res.json(await ordersService.findOne(id));
+    } catch (error) {
+      next(error);
+    }
+  })
 
 ordersRouter.post('/',
   validatorHandler(createOrderSchema, 'body'),
