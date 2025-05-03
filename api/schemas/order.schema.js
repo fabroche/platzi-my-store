@@ -6,6 +6,8 @@ const {customerValidationSchema,customerAttrTypes} = require('../schemas/custome
 const orderValidationSchema = Joi.object({
   id: Joi.number().integer(),
   customerId: customerValidationSchema.extract(customerAttrTypes.id),
+  limit: Joi.number().integer(),
+  offset: Joi.number().integer(),
 })
 
 const orderAttrTypes = generateKeyMap(orderValidationSchema.describe().keys);
@@ -23,10 +25,16 @@ const getOrderSchema = Joi.object({
   id: orderValidationSchema.extract(orderAttrTypes.id).required(),
 });
 
+const queryOrdersSchema = Joi.object({
+  limit: orderValidationSchema.extract(orderAttrTypes.limit),
+  offset: orderValidationSchema.extract(orderAttrTypes.offset),
+});
+
 module.exports = {
   createOrderSchema,
   updateOrderSchema,
   getOrderSchema,
   orderValidationSchema,
-  orderAttrTypes
+  orderAttrTypes,
+  queryOrdersSchema
 }

@@ -12,7 +12,9 @@ const productValidationSchema = Joi.object({
     name: categoryValidationSchema.extract(categoryAttrTypes.name),
     image: categoryValidationSchema.extract(categoryAttrTypes.image),
   }),
-  categoryId: categoryValidationSchema.extract(categoryAttrTypes.id)
+  categoryId: categoryValidationSchema.extract(categoryAttrTypes.id),
+  limit: Joi.number().integer(),
+  offset: Joi.number().integer(),
 })
 
 const productsAttrTypes = generateKeyMap(productValidationSchema.describe().keys);
@@ -22,10 +24,7 @@ const createProductSchema = Joi.object({
   price: productValidationSchema.extract(productsAttrTypes.price).required(),
   description: productValidationSchema.extract(productsAttrTypes.description).required(),
   image: productValidationSchema.extract(productsAttrTypes.image).required(),
-  category: Joi.object({
-    name: categoryValidationSchema.extract(categoryAttrTypes.name),
-    image: categoryValidationSchema.extract(categoryAttrTypes.image),
-  }),
+  category: productValidationSchema.extract(productsAttrTypes.category),
   categoryId: categoryValidationSchema.extract(categoryAttrTypes.id)
 });
 
@@ -41,10 +40,16 @@ const getProductSchema = Joi.object({
   id: productValidationSchema.extract(productsAttrTypes.id).required(),
 });
 
+const queryProductsSchema = Joi.object({
+  limit: productValidationSchema.extract(productsAttrTypes.limit),
+  offset: productValidationSchema.extract(productsAttrTypes.offset),
+});
+
 module.exports = {
   createProductSchema,
   updateProductSchema,
   getProductSchema,
   productValidationSchema,
   productsAttrTypes,
+  queryProductsSchema
 }
