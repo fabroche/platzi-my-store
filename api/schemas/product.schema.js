@@ -13,8 +13,6 @@ const productValidationSchema = Joi.object({
     image: categoryValidationSchema.extract(categoryAttrTypes.image),
   }),
   categoryId: categoryValidationSchema.extract(categoryAttrTypes.id),
-  limit: Joi.number().integer(),
-  offset: Joi.number().integer(),
 })
 
 const productsAttrTypes = generateKeyMap(productValidationSchema.describe().keys);
@@ -41,10 +39,17 @@ const getProductSchema = Joi.object({
 });
 
 const queryProductsSchema = Joi.object({
-  limit: productValidationSchema.extract(productsAttrTypes.limit),
-  offset: productValidationSchema.extract(productsAttrTypes.offset),
+  limit: Joi.number().integer(),
+  offset: Joi.number().integer(),
   name: productValidationSchema.extract(productsAttrTypes.name),
   price: productValidationSchema.extract(productsAttrTypes.price),
+  price_min: Joi.number().integer(),
+  price_max: Joi.number().integer().when(
+    'price_min', {
+      is: Joi.exist(),
+      then: Joi.required()
+    }
+  ),
   categoryId: categoryValidationSchema.extract(categoryAttrTypes.id),
 });
 
