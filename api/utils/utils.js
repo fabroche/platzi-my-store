@@ -44,10 +44,6 @@ function setPagination(query, options) {
 function setFilters(attrSchema, query, options) {
 
   Object.values(attrSchema).map((filter) => {
-    if (filter === attrSchema.limit || filter === attrSchema.offset) {
-      return;
-    }
-
     if (query[filter]) {
       options.where[filter] = query[filter];
     }
