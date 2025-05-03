@@ -2,6 +2,7 @@ const {CategoryModel} = require("../src/models/category.models");
 const {generateCategories, saveItemsIntoDB} = require("../src/api/e-commerce");
 const boom = require("@hapi/boom");
 const {sequelize: {models}} = require("../libs/sequelize");
+const {setPagination} = require("../utils/utils");
 
 class CategoryService {
   constructor() {
@@ -26,8 +27,13 @@ class CategoryService {
 
   }
 
-  async find() {
-    const categories = await models.Category.findAll();
+  async find(query) {
+
+    const options = {}
+
+    setPagination(query, options);
+
+    const categories = await models.Category.findAll(options);
 
     if (!categories?.length) {
       throw boom.notFound('There is not any Category');

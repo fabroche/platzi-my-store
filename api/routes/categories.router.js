@@ -5,30 +5,25 @@ const {CategoryService} = require("../services/categories.service");
 const {
   createCategorySchema,
   getCategorySchema,
-  updateCategorySchema
+  updateCategorySchema,
+  queryCategoriesSchema
 } = require("../schemas/category.schema");
 
 const categoriesRouter = Router();
 
 const categoriesService = new CategoryService();
 
-categoriesRouter.get('/', async (req, res, next) => {
+categoriesRouter.get('/',
+ validatorHandler(queryCategoriesSchema, 'query'),
+  async (req, res, next) => {
   try {
-    const categories = await categoriesService.find();
+    const categories = await categoriesService.find(req.query);
 
-    const {limit = categories.length, offset = 0} = req.query;
-
-    const result = handlePagination({
-      limit,
-      offset,
-      itemList: categories
-    });
-
-    if (!result?.length) {
+    if (!categories?.length) {
       res.status(404).send('No se encontraron Categorias');
     } else {
       res.status(200).json([
-        ...result
+        ...categories
       ]);
     }
 
