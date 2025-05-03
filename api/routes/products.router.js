@@ -5,35 +5,28 @@ const {validatorHandler} = require("../middlewares/validator.handler");
 const {
   createProductSchema,
   updateProductSchema,
-  getProductSchema
+  getProductSchema,
+  queryProductsSchema
 } = require("../schemas/product.schema");
 
 const productsRouter = Router();
 const productService = new ProductsService();
 
 
-productsRouter.get('/', async (req, res, next) => {
+productsRouter.get('/',
+  validatorHandler(queryProductsSchema, 'query'),
+  async (req, res, next) => {
+
   try {
+    const query = req.query;
 
-    const products = await productService.find();
+    const products = await productService.find(query);
 
-    const {limit = products.length, offset = 0} = req.query;
-
-    if (limit <= 0 || offset < 0) {
-      res.status(404).send('Limit tiene que ser mayor que 0 y Offset no puede se menor que 0');
-    }
-
-    const result = handlePagination({
-      limit,
-      offset,
-      itemList: products
-    });
-
-    if (!result?.length) {
+    if (!products?.length) {
       res.status(404).send('No se encontraron productos');
     } else {
       res.status(200).json([
-        ...result
+        ...products
       ]);
     }
   } catch (error) {

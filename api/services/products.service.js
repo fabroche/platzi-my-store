@@ -1,6 +1,7 @@
 const {sequelize: {models}} = require('../libs/sequelize');
 const {generateProducts, saveItemsIntoDB} = require("../src/api/e-commerce");
 const boom = require("@hapi/boom");
+const {setPagination} = require("../utils/utils");
 
 
 class ProductsService {
@@ -34,10 +35,15 @@ class ProductsService {
     return await this.getProducts();
   }
 
-  async find() {
-    const products = await models.Product.findAll({
-      include: ['category']
-    });
+  async find(query) {
+
+    const options = {
+      include: ['category'],
+    }
+
+    setPagination(query, options);
+
+    const products = await models.Product.findAll(options);
 
     if (!products?.length) {
       throw boom.notFound("No se encontraron productos")
