@@ -43,6 +43,9 @@ const getProductSchema = Joi.object({
 const queryProductsSchema = Joi.object({
   limit: productValidationSchema.extract(productsAttrTypes.limit),
   offset: productValidationSchema.extract(productsAttrTypes.offset),
+  name: productValidationSchema.extract(productsAttrTypes.name),
+  price: productValidationSchema.extract(productsAttrTypes.price),
+  categoryId: categoryValidationSchema.extract(categoryAttrTypes.id),
 });
 
 module.exports = {
