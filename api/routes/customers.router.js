@@ -7,14 +7,17 @@ const {
   createCustomerSchema,
   updateCustomerSchema,
   getCustomerSchema,
+  queryCustomersSchema
 } = require('../schemas/customer.schema')
 
 const customersRouter = express.Router();
 const customerService = new CustomersService();
 
-customersRouter.get('/', async (req, res, next) => {
+customersRouter.get('/',
+  validatorHandler(queryCustomersSchema, 'query'),
+  async (req, res, next) => {
   try {
-    res.json(await customerService.find());
+    res.json(await customerService.find(req.query));
   } catch (error) {
     next(error);
   }

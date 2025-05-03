@@ -1,13 +1,19 @@
 const boom = require('@hapi/boom');
 const {sequelize: {models}} = require('../libs/sequelize');
+const {setPagination} = require("../utils/utils");
 
 class CustomersService {
   constructor() {}
 
-  async find() {
-    const customers = await models.Customer.findAll({
+  async find(query) {
+
+    const options = {
       include: ['user']
-    });
+    }
+
+    setPagination(query, options);
+
+    const customers = await models.Customer.findAll(options);
 
     if (!customers?.length) {
       throw boom.notFound('There is not any Customer');
